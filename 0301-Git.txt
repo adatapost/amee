@@ -53,3 +53,67 @@ How to install "Git" tool and use the "Git" at local machine?
    Note: You can use wildcard to select files or folders. eg  .  git add *.*
 								git add *.txt
 
+Example: Create repo, add/commit work in diff branches and finally merge the content of two or more branches.
+
+>git init 
+>git add *.*  -- add some files
+>git commit -m "Add files"
+
+    Note: The comment is most important thing while commiting the work. Using commit comments we can understand what we have added/updated/did on a particular file.
+
+  e.g  git add Program.java
+       git commit -m "Fix bugs in hello() method"
+
+Now, all work that has been added into repository is in "master" branch.
+
+>git branch -l will dispplay branch
+
+Now, we want to keep "master" branch safe and work in different branch:
+
+Create a new branch
+>git branch dev   (dev is the name of the new branch - you may choose your own name)
+
+Make the 'dev' as active branch - i.e checkout 
+
+>git checkout dev
+
+Now, add some work, update files, perform git add and git commit under the "dev" branch. 
+
+>git branch -l 
+* dev        <-- * indicates the active branch
+  branch  
+
+>git status     -- command shows what is added or committed
+>git log        -- command display "log" of all commits 
+>git show       -- display the content of files/nodes of an active branch
+
+Note: To remove the file or directory, use "git rm file-or-folder"
+
+       For more help of "git", just type ">git" or ">git help command-name"
+
+Now, checkout the master
+>git checkout master
+>dir 
+   You wont find the content of "dev" branch until you merge it
+
+
+Diff command
+>git diff dev   --- List the diff in two branches
+
+
+Merge the branch dev to master ( *master is an active branch)
+>git merge dev
+
+  After this command, you will have both master as well as dev content
+
+>git log  -- display log of both branches (now merged)
+
+
+To delete unnecessary branch:
+>git branch -d dev
+
+
+
+
+git remote add origin https://github.com/adatapost/amee.git
+git push -u origin master
