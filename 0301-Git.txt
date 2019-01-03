@@ -50,6 +50,6 @@ How to install "Git" tool and use the "Git" at local machine?
 
    c:\amee>git commit -m "sample.txt file added"
 
-   Note: You can use wildcard to select files or folders. eg.  git add *.*
+   Note: You can use wildcard to select files or folders. eg  .  git add *.*
 								git add *.txt
 
