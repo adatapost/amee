@@ -1,0 +1,177 @@
+Upload "file" -- Binary data request
+=====================================
+
+To copy a file or files from client location to server location is known as file uploading. The uploaded content of the file is received by the Servlet's HttpServletRequest's getPart("key") method.
+
+It is important to note that the servlet that is used to receive the "binary" data (or file) must be configure as @MultipartConfig. That means @MultipartConfig servlet has an ability read the "binary" data.
+
+In client code (Html form), we must have to put an instruction with <form> that the sender can send plain-text data along with "file(s)" as an attachment using "POST" request method. So, the <form> for file upload must be:
+
+  <form method="POST" enctype="multipart/form-data" action="url"> ...</form>
+
+
+In servlet (server code), we can read the uploaded file content using "IO Stream classes". (Prepare buffer or save the content into disk as a file) If we wish to save the uploaded file content in the form of "file" then we must have to save the uploaded file in current application's  folder where everyone has permission to create the file -- and this folder must he inside the current app context (Note: Outside the app context, nothing is permissible).
+
+Secondly, our web app is deployed at specific folder of "container" so we must have to determine that exact location of folder of deployed application.
+
+To obtain the actual or physical or real path of resource of the current web app, we must have to invoke getRealPath("/url") method of ServletContext class.
+
+String path = request.getServletContext().getRealPath("/"); // Pyhsical path of / (root)
+String path = request.getServletContext().getRealPath("/images/hello.png"); 
+Note: To perform file/folder deletion, or to perform write/read on disk file, we must provide absolute path. 
+
+For example, to remove "/images/sample.png" via servlet code:
+ String virtualPath = "/images/sample.png";
+ String realPath = request.getServletContext().getRealPath( virtualPath );
+ File file = new File( realPath );
+ file.delete();
+
+Example: Upload files into /files folder of our app
+
+upload.jsp
+-----------
+<form method="post" enctype="multipart/form-data" url="upload">
+  <input type="file" name="file" />
+  <button>Upload</button>
+</form>
+<br/>${message}
+<br/>${path}
+
+UploadServlet.java -- also create /files folder into root of the app 
+
+@MultipartConfig
+@WebServlet("/upload")
+public class UploadServlet extends HttpServlet {
+ 	protected void doGet(HttpServletRequest request, 
+ 			HttpServletResponse response) throws ServletException, IOException {
+ 		request.getRequestDispatcher("/upload.jsp").forward(request, response);
+	}
+	protected void doPost(HttpServletRequest request, 
+			HttpServletResponse response) throws ServletException, IOException {
+		
+	 	Part part = request.getPart("file"); /* Read a part */
+	 	String message = "", path = "";
+	 	if(part!=null) {
+	 		//message = part.getSize() + " bytes ";
+	 		//message += part.getContentType() + " ";
+	 		//message += part.getHeader("content-disposition");
+	 		//Obtain the attachment metadata of uploaded file
+	 		String str = part.getHeader("content-disposition");
+	 		String []ar = str.split("filename=");
+	 		str = ar[1].replaceAll("\"", "");
+	 		path = request.getServletContext().getRealPath("/files/" + str);
+	 		part.write(path);
+	 		message = "File uploaded successfully!!!";
+	 	}
+	 	request.setAttribute("message", message);
+	 	request.setAttribute("path", path);
+		request.getRequestDispatcher("/upload.jsp").forward(request, response);
+	}
+}
+
+
+Note: 
+
+   part.getHeader("content-disposition").split("filename=")[1].replaceAll("\"","") returns the name of uploaded filename with escaping double quotes.
+
+In case, in development environment, your uploaded files can be saved to current project folder in order to examine the content of file, use "absolute" path of current project's root.
+
+e.g   part.write("c:/app/files/" + filename);
+
+Example: Filter the image types files to be selected using file upload dialog:
+
+   <input type="file" accept="image/*" name="file" />
+
+Example: Save uploaded file content into database. Use "BLOB - Binary Large Object" field without size/length restriction.
+
+1. 
+create table student
+(
+    id int primary key AUTO_INCREMENT,
+    name varchar(40) not null,
+    photo blob
+    )
+
+2.
+
+student.jsp
+
+<form method="post" enctype="multipart/form-data" url="student">
+  <input type="text" name="name" placeholder="Name" />
+  <input type="file" accept="image/*" name="photo" />
+  <button>Upload</button>
+</form>
+<br/>${message}
+
+3.
+
+ @MultipartConfig
+@WebServlet("/student")
+public class ServletServlet extends HttpServlet {
+ 	protected void doGet(HttpServletRequest request, 
+ 			HttpServletResponse response) throws ServletException, IOException {
+ 		request.getRequestDispatcher("/student.jsp").forward(request, response);
+	}
+	protected void doPost(HttpServletRequest request, 
+			HttpServletResponse response) throws ServletException, IOException {
+	 	Part part = request.getPart("photo");
+	 	String name = request.getParameter("name");
+	 	String message = "";
+	 	if(part!=null) {
+	 		//code to insert record
+	 		try(Db x = new Db("insert into student (name,photo) values(?,?)" )) {
+	 			x.getSt().setString(1, name);
+	 			x.getSt().setBlob(2, part.getInputStream() );
+	 		    x.execute();
+	 			message = "Student record saved";
+	 		} catch(Exception ex) {
+	 			message = "Can't insert..." + ex;
+	 		}
+	 	}
+	 	request.setAttribute("message", message);
+		request.getRequestDispatcher("/student.jsp").forward(request, response);
+	}
+}
+
+Example: A servlet which returns "binary" content from the database (In previous example, we will return image file'scontent).
+
+@WebServlet("/student-photo")
+public class StudentPhotoServlet ...  {
+  doGet code:
+ 
+   String id = request.getParameter("id");
+   int intId =  0;
+   if(id!=null) {
+     intId = Integer.parseInt( id ); // Or use your own wrapper methods e.g U.toInt( id )
+     try(Db x = new Db("select photo from student where id=?")) {
+ 	        x.getSt().setInt(1,intId);
+ 	        Object []ar = x.row();
+ 	        if(ar!=null) {
+ 	        	response.setContentType("image/png");
+ 	        	response.getOutputStream().write((byte[])ar[0]);
+ 	        }
+ 	}catch(Exception ex) {
+ 	    	 
+       }
+
+Now, request above servlet via addressbar with,
+   /student-photo?id=2 
+You may list the student data along with photo using following code if your view has 
+List<Object[]>
+
+<c:forEach var="ar" items="${students}">
+  <div>
+    <h3>${ar[1]}</h3>
+    <img src="student-photo?id=${ar[0]}" style="width: 100px" />
+  </div>
+</c:forEach>
+           
+Or
+
+ <a href="student-photo?id=${ar[0]}" download="${dwName }">
+    <img src="student-photo?id=${ar[0]}" style="width: 100px" />
+  </a>
+
+
+<video src=""  autoplay control />
+

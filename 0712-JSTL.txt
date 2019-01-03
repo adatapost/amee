@@ -1,0 +1,157 @@
+JSP Standard Tag Library (JSTL)
+========================
+
+This is the external library to add Java code in JSP view / pages. We have to download the JSTL.jar and add them into /WEB-INF/lib or add the library reference via IDE's option.
+
+As we've seen that EL won't update object property and it doesn't have much ability like conditional or loop statements. The JSTL is designed for this purpose. JSTL's various tags allow us to update scope objects, add new entries, remove existing entries, perform selection, conditions and looping, format the number, date etc.
+
+JSTL.jar has four libraries or it is made up of four libs and these are:
+  1. core -- It provides tags for language basic features like - handle exception,
+             loop, control statement, set/get/remove map entries etc.
+  2. format -- To format the numeric, date and string data.
+  3. sql -- It provide very basic tag to execute select, delete, update and insert statements but
+		these tags have no importance when we build a large scale app -  we need to design
+		these operations carefully.
+  4. xml -- It is non-standard tag library to parse the XML document. It is not recommend to use
+		 sql and xml tag lib.
+
+How to activate the specific tag lib for our purpose?
+In order to use JSTL, we must register the lib for a page via <%@taglib> directive:
+
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+Note: the prefix attribute value can be anything you want.
+  for instance,  <%@taglib prefix="my" uri="http://java.sun.com/jsp/jstl/core" %>
+
+The core tags
+--------------
+1. <c:set var="varName" value="value"  scope="page|request|session|application"/>
+    - To update/add entry into appropriate scope.
+
+	e.g <c:set var="no" value="10" scope="page" /> --- Default scope is 'page'
+2. <c:out value="value" /> 
+    - To read the data from scope object and write into response buffer.
+
+    <c:set var="name" value="Welcome to JSTL"/>
+    <h3>${name} - Read via EL</h3> 
+    <h3><c:out value="${name}" /> - Read via JSTL</h3>   
+
+3. <c:remove var="name" /> -- Remove the entry
+
+4. <c:if test="${expr}">
+       //body
+   </c:if>      This is simple if and body will be executed when expr becomes true.
+
+   <c:if test="${no==10}">
+      <p>Number value is 10</p>
+   </c:if>
+
+   <c:if test="${no!=10}">
+      <p>Number is not 10</p>
+   </c:if>
+
+
+5. Simple for loop
+
+<c:forEach begin="1" end="10" step="3">
+  <p>Hello</p>
+</c:forEach>
+
+6. Collection for loop
+
+  <c:forEach var="city" items="${cities}">
+     <p>${city}</p>
+  </c:forEach>
+
+7. <c:catch> - Handle the exception
+
+<c:set var="no" value="Abc" />
+<c:catch var="ex">
+   <c:set var="no" value="${ no + 2 }" />
+</c:catch>
+<c:if test="${ not empty ex }">
+   <p>${ex }</p>
+</c:if>
+
+8. <c:choose>  -- Switch or if..else..if...
+
+Example:
+
+<c:set var="day" value="1" />
+<c:choose>
+  <c:when test="${day==1}">
+      Sunday
+  </c:when>
+  <c:when test="${day==2}">
+      Monday
+  </c:when>
+  <c:otherwise>
+      Other
+  </c:otherwise>
+</c:choose>
+
+9.  <c:forTokens> -- Split the string as per given delimeters
+
+<c:forTokens var="city" delims="|" items="Meh|Pat|Raj|Sur">
+  <p>${ city }</p>
+</c:forTokens>
+
+10. <c:url> - To construct the URL along with data, a querystring.
+
+<c:url var="appUrl" value="https://adatapost.com" >
+   <c:param name="id" value="10"></c:param>
+   <c:param name="name" value="Mr. A"></c:param>
+</c:url>
+
+<br/>
+${ appUrl } 
+https://adatapost.com?id=10&name=Mr.A
+                     |----------------|
+                         This is querystring (data)
+
+
+
+11. <c:import> - To read the URL and save response into a variable at given scope
+
+<c:import url="http://adatapost.com" var="home"></c:import>
+<hr/>
+Here is the content(reponse) of given URL.
+${ home }
+
+JSTL format tags
+------------------
+
+1. <fmt:formatNumber>
+2. <fmt:formatDate>  -- Format the number and date 
+3. <fmt:parseNumber>
+4. <fmt:parseDate> -- parse the number and date
+
+Example:
+
+<c:set var="no" value="1023456.4432"/>
+<br/>${no}
+<br/><fmt:formatNumber value="${no}"></fmt:formatNumber>
+<br/><fmt:formatNumber value="${no}" type="currency" ></fmt:formatNumber>
+<br/><fmt:formatNumber value="${no}" currencySymbol="Rs" type="currency"></fmt:formatNumber>
+<br/><fmt:formatNumber value="${no}"  pattern="00,00,00,000,000.00"  type="currency"></fmt:formatNumber>
+<br/><fmt:formatNumber value="${no}"  pattern="##,##,##,##,##,###.00"></fmt:formatNumber>
+
+<jsp:useBean id="now" class="java.util.Date" />
+
+<br/><fmt:formatDate value="${now}" />
+<br/><fmt:formatDate value="${now}" type="time" />
+<br/><fmt:formatDate value="${now}" type="both" />
+<br/><fmt:formatDate value="${now}" pattern="dd-MM-yyyy HH:mm:ss a" />
+
+<c:set var="no" value="223.323"/>
+<fmt:parseNumber var="n1" value="${no}"></fmt:parseNumber>
+<br/>Number : ${n1}
+
+<c:set var="dtStr" value="31-12-2018"/>
+<fmt:parseDate var="dt" value="${dtStr }" pattern="dd-MM-yyyy"></fmt:parseDate>
+<br/> ${dt}
+
+
+
+

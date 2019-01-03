@@ -1,0 +1,125 @@
+The Servlet class - javax.servlet.http.HttpServlet
+=================
+
+The JSP is a way to create the 'servlet' sub class and here we will extend the java.servlet.http.HttpServlet class to define a 'servlet' sub class.
+
+  1. There must be a named package for servlet sub-class 
+  2. Servlet sub-class must be 'public'
+  3. Servlet sub-class must be 'registered' via web.xml or annotation syntax.
+
+     To 'register' the servlet means put a specific 'servlet' into the 'service' and to unregister
+     means to revoke a specific servlet from the service.
+
+Example: 
+
+package com.abc.servlet;
+
+@WebServlet("/first")
+public class FirstServlet extends HttpServlet {
+  public void doGet(HttpServletRequest request,
+                    HttpServletResponse response) throws IOException, ServletException {
+     //TODO
+     System.out.println("GET Request!");
+  }
+  public void doPost(HttpServletRequest request,
+                    HttpServletResponse response) throws IOException, ServletException {
+     //TODO
+     System.out.println("POST Request!");
+  }
+}
+
+Now, restart the container and type url /first at addressbar
+OR
+add following code in .jsp
+
+<a href="first">GET Request to FirstServlet</a>
+
+<form method="post" action="first">
+   <button>POST Request to FirstServlet</button>
+</form>
+
+<form method="get" action="first">
+   <button>GET Request to FirstServlet</button>
+</form>
+
+Request method GET Vs POST
+----------------------------
+
+ GET						POST
+ 1. Has plain text form 			1. Has 'encoded' text form of data
+ 2. Length/content size has limit		2. There is no such limit barrrier. You may pass
+    imposed by the browser. 			 huge amount of data.
+ 3. Can't upload files				3. Upload the files. i.e send binary data too.
+ 4. GET request for 'reading' resources.	4. POST request to update (write/delete etc) the
+						   resources. (Resources means data, database, 						   file, directories, xml, JSON, Images, 
+						  code files etc)
+NOTE: Default request method/type is 'GET'
+
+      With the help of JavaScript, we can request the resources using POST as well as GET request
+      type programatically and this feature is known as AJAX -  Asynchronious JavaScript And XML.
+      It means a piece of JavaScript will request the resources and also receive the 'responses'.
+
+When to use JSPs (Template Engine) Servlet and when to use Servlet classes?
+============================================================================
+To display the 'data' we must have to use 'JSP or Template Engine' and to update/write/process the 'data' we must have to use 'servlet classes'.
+
+However, JSP and plain servlet subclasses are "servlets" but we must cosider the appropriate usage of both of them.
+
+Basic paradigm of request-response situations:
+
+  client -----> request a servlet ------> Servlet's doGet or doPost method will be executed as 
+					  per request method/type.
+						|
+						|
+						V
+						Perform various (different-different) tasks, 
+						populate the response buffer as you wish to
+						write data at client,
+						push the 'response buffer' to "JSP Servlet or may 						be another Servlet but the last must be a 'JSP
+						servlet in a chain.
+						|
+						V
+						Execute the JSP servlet and generate the dynamic
+						content of HTML/CSS/JavaSCript.
+  ^
+  |                                                          |
+  |--------- <---- Response generated from JSP servlet  ......
+				
+
+In above situation, a request must be made to 'servlet' and not even to 'jsp resource or static resource'. The Servlet class will decide what to deliver to client.
+
+
+How to invoke another servlet from within another servlet? 
+
+ OR
+
+How a servlet can request another servlet?
+-------------------------------------------
+
+We've a RequestDispatcher class (object of that class) whose forward(request, response) and include(request,response) methods allow a servlet to invoke another servlet.
+
+For example, We want a 'FirstServlet' can 'dispatch' or 'request' the 'hello.jsp' located at the root of webapp.
+
+1. /hello.jsp
+
+<h1>Hello!!!</h1>
+
+2. 
+...
+@WebServlet("/first")
+public class FirstServlet extends HttpServlet {
+  public void doGet(HttpServletRequest request, HttpServletResponse) throws ServletException,
+								        IOException {
+      request.getRequestDispatcher("/hello.jsp").forward( request, response );
+  }
+}
+
+So, when you request /first resource, you will obtain the 'output' from hello.jsp servlet.
+
+
+NOTE: The 'url' used in getRequestDispathcer('/url') must be root relative. Must begins with /
+
+e.g    request.getRequestDispatcher("/admin/sample.jsp")
+       request.getRequestDispatcher("/WEB-INF/pages/private.jsp")
+
+ 

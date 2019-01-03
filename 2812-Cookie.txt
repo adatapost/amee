@@ -1,0 +1,111 @@
+Cookie
+===============================
+
+A "cookie" is a state management mechanism to represent the "state or data" at client's environment (especially web-browser client). Web-browser has ability to save data in the form of "cookie" object. Basically a "cookie" object contains cookie-name/key, cookie-value, cookie-expire date & time, cookie-namespace or cookie-path or url.
+
+Note that the Session implicitly uses "cookie" to save the client specific "state" into server memory.
+
+Cookie object represent data in plain-text form and they can be easily viewed and tempered so don't store important or sensitive data in it. However you can encrypt your data before saving into cookie and decrypt while reading the cookies.
+
+Secondly, each & every cookie will be travel to "server" on each request and in server-code (JSP or Servlet) we can read the content of cookies using "Cookie" class and its methods.
+
+Note that the "server" code cannot create/update/delete a cookie (Cookies are controlled by the browser) but the server code place instructions/data to the client to perform add/delete/update actions.
+
+code to create a cookie:
+  Cookie c1 = new Cookie("no","10");  // Cookie data/value must be string
+  Cookie c2 = new Cookie("last_visited", "abc.jsp");
+
+  //add cookies to response's header (instructions) so the browser can create cookie at client
+  //machine
+
+  response.addCookie( c1 );
+  response.addCookie( c2 );
+
+
+code to read cookie(s):
+   for(Cookie c : request.getCookies()) {
+     System.out.println(c.getName() + " " + c.getValue());
+   }
+  The method  Cookie[] request.getCookies() returns an array of Cookie objects and we have to traverse to examine or read or set the value.
+
+   for(Cookie c : request.getCookies()) {
+      if(c.getName().equals("is_admin")) {
+          //TODO
+          break;
+      }
+    }
+
+In view (.jsp), use EL expression or JSTL <c:out> to read the cookies.
+
+The ${cookie} returns a cookie map which will be accessed via "name/key":
+
+${cookie.no.value}
+Or
+${cookie["no"].value}
+OR
+${cookie["no"]["value"]}
+
+Example: code in a servlet to find and update/add a cookie object
+
+
+                Cookie []cookies = request.getCookies();
+		boolean isFound = false;
+		Cookie c1 = null;
+	
+		if(cookies!=null) {
+		   for(Cookie c : cookies) {
+			   if(c.getName().equals("no")) {
+				   c1 = c;
+				   isFound = true;
+				   break;
+			   }
+		   }
+		   if(!isFound) {
+			   c1 = new Cookie("no", "1");
+		   } else {
+			   c1.setValue( String.valueOf((Integer.parseInt(c1.getValue()) + 5 )));
+		   }
+		   response.addCookie(c1);
+		}
+
+You may create a "Wrapper" component (class) to create, update , read and delete the cookies.
+
+Delete a cookie 
+----------------
+In order to remove the cookie, set "past" datetime to the "expiration" property -- setMaxAge. Basically when you create a cookie, current datetime (milliseconds) is set to the cookie and web-browser will persists the cookie till browser is open.
+If you set future expire datetime value then web-browser will save these cookies into "disk" till the "given" expire datetime is not exceed (as compare to current datetime).
+
+The maximum age or expire limit is 1 YEAR from the current datetime.
+
+Time is specify in "second" to Cookie's setMaxAge( seconds ) method.
+
+To persist cookie for 1 day:
+    Cookie c1 = new Cookie("no","10");
+    c1.setMaxAge( 60*60*24 );
+     
+To remove the cookie:
+    Cookie c1 = new Cookie("no","");
+    c1.setMaxAge( 0 );
+
+Note: Value 0 to setMaxAge will delete a cookie, positive value will store the cookies into disk and negative value will create "temporary cookie -- will be discarded as soon as browser close".
+
+Example: CookieWrapper class
+
+public class CookieWrapper {
+   public static Cookie create(String key, String value, int maxAge, HttpServletResponse resp) {
+       Cookie c = new Cookie(key,value);
+       c.setMaxAge( maxAge );
+       resp.addCookie( c);
+   }
+  public static String read(String key, HttpServletRequest req) { 
+      Cookie []cookies = req.getCookies();
+      if(cookies==null) return "";
+      for(Cookie c : cookies) {
+         if(c.getName().equals(key)) return c.getValue();
+      }
+     return "";
+ }
+ //TODO - method to remove cookie
+}     
+
+

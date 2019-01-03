@@ -1,0 +1,131 @@
+Expression Language ( EL ) and JSP
+==================================
+
+In previous session, we've used <% %> (Scriplet), <%=expr%> and <%! .. declarator %> to embed to Java code into JSP. But for the security purpose, design and better markup we should not use the <% .. %> syntax. So here we will have an alternative called EL and JSTL.
+
+EL offer syntax to write values (data from objects) into response buffer. The EL don't update/write the objects. 
+
+Syntax:  ${expression}   -- This is the only syntax of EL to write expression into response buffer.
+However, EL uses basic operators -- artihmetic, relational, logical, conditional to form an expression.
+
+The most important feature of EL is lie in its type-conversion --- Any numeric value without decimal will be automatically converted to 'Long', value with decimal will be 'Double', object will be transformed into 'String' by calling 'toString()' method and the null  will be transformed into empty ("") string.
+
+EL don't uses 'local' variables.
+
+EL always uses following Map which allow us to push data into key-value form. These objects are:
+    1. Request Scope object - A Map object will be created when a request is made and remain till
+	it is not processed.
+    2. Session Scope object - A Map object will be created when user-browser request any resource
+	first time and remain into server memory till user-browser is not closed.
+    3. Application Scope object - A Map object will be created when an app is started and this map
+		remain alive till app content is not removed or app server is not shutdown.
+
+In Servlet, these three objects are obtained via:
+
+  1.  doGet or doPost's HttpServletRequest's parameter -- This is request scope object and
+      we can use three methods of this object:
+
+        request.setAttribute("key",value);
+        request.getAttribute("key"); 
+        request.removeAttribute("key");
+  2. For session scope, request.getSession() method is used
+  3. For Application scope, request.getServletContext() method is used.
+  Note: All three scope have three methods in common -- setAttribute, getAttribute and         removeAttribute.
+
+   In JSP, EL has fourth scope object called "PageScope" and has a map with same three methods but this object is alive and available for current page only.
+
+Example-1 Test the EL expressions (in any .jsp)
+
+<br/>${title}
+<br/>${"Hello"}
+<br/>${10+20}
+<br/>${10 mod 5 }  <!--- modulo -->
+<br/>${10 div 3 }  <!-- div -- we can use / but for the sake of simplicity -->
+<br/>${ 10 > 20 }  is equivalen to ${ 10 gt 20 }
+<br/>${ 10 == 20 } is eq to ${ 10 eq 10 }
+<br/>${ 10 >= 20 } is eq to ${ 10 ge 20 }
+<br/>${ 10 <= 20 } is eq to ${ 10 le 20 }
+<br/>${ 10 < 20 } is eq to ${ 10 lt 20 }
+<br/>${ 10 != 20 } is eq to ${ 10 ne 20 }
+<br/>${ not empty title } 
+
+Example-2 Create a servlet with /first url and add following code in doGet
+
+       request.setAttribute("title","The Appleman Pvt Ltd");
+       request.setAttribute("cities", new String[] { "Meh","Pat","Raj"} );
+       request.getRequestDispatcher("/first.jsp").forward(request,response);
+
+    And code in first.jsp,
+
+     <!doctype html>
+     <h1>${title}</h1>
+     <hr/>
+     Cities: ${cities}
+     <br/> ${cities[0]} and ${cities[1]} and ${cities[2]} are my hometown. 
+
+Example-3  How the EL evalute the scope object when there are more than one same named/key entries with session, request, application and page scope?
+
+ The EL first go for "pageScope" and examine the "key". If "key" is not there then EL will go to "requestScope" and examine the key. If "key" is not there then it go to "sessionScope" and examine the key. If "key" is not there then it go to "applicationScope" and examine the key and if "key" is not there then it returns null and null will be transformed into "" empty string.
+
+
+code in doGet:
+request.setAttribute("name", "This is request scope item.");
+request.getSession()
+       .setAttribute("name", "This is session scope item");
+request.getServletContext()
+       .setAttribute("name", "This is app scope item");
+
+request.getRequestDispatcher("/first.jsp").forward(request,response);
+
+and first.jsp/
+<p>${name}</p>
+<p>${requestScope.name}</p>
+<p>${sessionScope.name}</p>
+<p>${applicationScope.name}</p>
+
+In JSP, uses pageScope, requestScope, sessionScope or applicationScope object references to access the map entry.
+
+Example: Write a code in servlet to read a record from the "table" and display the content in .jsp.
+
+Example: Design model, and DAO for the following tables into your web-app.
+
+create table user_info
+(
+  user_id int auto_increment,
+  user_email varchar(255) unique not null,
+  user_pass varchar(70) not null,
+  user_role varchar(10) not null,
+  created datetime not null,
+  deleted bit not null,
+  primary key(user_id)
+)
+
+create table user_profile
+(
+  user_id int primary key,
+  full_name varchar(100) not null,
+  address  varchar(300),
+  city varchar(20),
+  photo varchar(100), foreign key(user_id) references user_info(user_id)
+)
+
+create table course
+( 
+  course_id int primary key,
+  course_name varchar(100) not null unique
+)
+
+create table fee
+(
+  fee_id int primary key auto_increment,
+  fee_commence_date date not null,
+  course_id int,
+  amount int,
+  foreign key(course_id) references course(course_id)
+)
+
+
+
+
+
+    

@@ -1,0 +1,304 @@
+The Java Server Pages - JSP - A View or Template Engine
+=========================================================
+
+JSP is a template engine which processes the ".jsp" programmable pages. JSP Template engine convert .jsp page into "Java sub class of HttpServlet class", compile it and add it into "service" stack so the container can load the servlets whenever required.
+
+Basically, JSP page is a programmable web page that produces the dynamic content of HTML/CSS/JavaScript and we can write following program/code as the content of .jsp file:  
+  1. HTML markup
+  2. Stylesheet code
+  3. JavaScript (Client program )
+  4. Java Code
+
+To embed the Java Code in .jsp, we've many ways but some of them are 'outdated - especially JSP Tags, expressions and declaration'.
+
+   1. JSP Tags - In order specification of JSP, JSP tags are the only way to write Java code
+                 in .jsp files.
+ 
+                 There are three different syntax to embed Java code:
+
+		  1. Scriptlet syntax - To write executable statements.
+
+		  <%
+                     // statements ....
+                  %>
+
+    Example: (code in side the <body> markup)
+
+     <body>
+        <%
+         for(int n = 1; n<=10; n<++) {
+           out.println(n); // out.print(n);
+         }
+        %>
+        <%
+          String name = "Amee";
+          out.println("<h4>My name is " + name + "</h4>");
+        %>
+      </body>
+
+                2. Expression syntax -- To write data / value into response buffer (shorthand of
+			out.println() method)
+
+			<%= expression %>
+
+    Example:
+     <%
+        String name = "Amee";
+        int age = 20;
+     %>
+     <p>Hello I'm <%=name%> and <%=age%> years old.</p>
+     <%
+        int no1 = 10, no2 = 4;
+      %>
+      <ul>
+        <li>Sum : <%=no1+no2%></li>  
+        <li>Division: <%=no1/no2%></li>
+      </ul>
+
+                  3. Declaration syntax - To define the methods/functions and later they will be
+		     called by another method or in scriptlet or expression syntax.
+
+      <%!
+        here goes method definitions and fields
+      %>
+
+    Example:
+
+     <%!
+         String name = "Sample Page";
+         String about() {
+            return "Developed by Amee";
+         }
+         int sum(int n, int m) {
+           return n + m;
+         }
+     %>
+     <h2><%=name%></h2>
+     <h6><%=about()%></h6>
+     <input type="text" value="<%=sum(33,4)%>" />
+
+  ***** IMPORTANT --- Scriptlet, Expression and Declaration syntax are not used because they 
+     (syntax of scriptlet, expression and declaration) confuse the page author by adding too many
+     <%  %> tags as well as the code inside these syntax cannot be re-use in other pages/programs/
+     or servlets.
+
+       There are another ways to embed Java code in JSP are these are:
+           1. EL - Expression Language -- Has a simple syntax to write data/value/expressions
+                   into response buffer.
+           2. JSTL - Java Server Pages Standard Tag Library
+           3. JSP Actions -- These are pre-defined actions within the JSP engine which are 				expressed via HTML like tags (XML Syntax).
+
+
+Examples: Scriptlet block continuation -- break the single scriptlet block into two or more
+		scriptlet block.
+
+<select>
+ <%
+   for(int i=1;i<=10;i++) {
+     %>
+    <option><%=i%></option>
+   <% 
+    }
+  %>
+</select>
+
+Or
+
+<%
+  out.print("<select>");
+  for(int i=1;i<=10;i++) {
+    out.print("<option>" + i + "</option>");
+  }
+  out.print("</select>");
+%>
+
+Example: Multiplication table
+
+<table border='1'>
+ <%
+  for(int i=1;i<=10;i++) {
+    %>
+    <tr>
+     <%
+       for(int j=1;j<=10;j++) {
+          %>
+         <td><%=(i*j)%></td>
+       <% } %>       
+    </tr>
+   <% } %>
+</table>
+
+Note: All variables created inside the 'scriptlets' are local variables and they will be used inside the service method of servlets. These local variables will be discarded as soon as the execution of service method is over.
+
+Example: Demonstrate the 'field' and 'local variable' 
+
+<%!
+   int no = 0;  // field
+%>
+
+<%
+  int m = 0;   // local variable
+%>
+
+<%
+  no++;
+  m++;
+%>
+<br/>Field : <%=no%>
+<br/>Local : <%=m%>
+
+
+NOTE: As above example explain why JSP tags are not used by the developers because "fields" of the servlet will remains in memory till an app is running resulting memory waste. 
+
+SO NEVER EVER USE the JSP TAGS..
+
+
+The JSP Directives
+==================
+Directive means "instructor". JSP directives are used to instruct the JSP Engine so before converting the JSP page into class, JSP Engine perform necessary actions described by "JSP Directives".
+
+There are three JSP Directives and these are:
+   1. <%@ page ..... %>  - Page directive
+   2. <%@taglib .... %>  - Tag library directive
+   3. <%@include file="url" %> - Include directive
+
+These directives must appear at the begin of the JSP file and all three directives are optional or we can use them according to our needs.
+
+For example, if we want to import some classes/packages then
+
+   <%@page imports="java.io.InputStream, java.util.*" %>
+
+Directives and their attributes are case-sensitive.
+
+Example - contentType attribute of @page - It changes the output/contentType of 'response'.
+
+To return XML,
+
+<%@ page contentType="text/xml" %>
+<m><p>10</p></m>
+
+To return Image,
+<%@ page contentType="image/jpeg" %>
+
+To return plain-text,
+<%@ page contentType="text/plain" %>
+
+Note: Default value of 'contentType' is 'text/html'
+
+Example: To define an errorPage -- Any type of exceptions in JSPs will automatically redirects user to 'errorPage' (to show error description).
+
+Step-1 Create 'error.jsp' with,
+<%@page isErrorPage='true' %>
+<!doctyle html>
+<title>Error Page</title>
+<body>
+ <h3>Error</h3>
+ <pre><%=exception%></pre>
+</body>
+
+Note: 'exception' is intrinsic JSP object which represents an exception object.
+
+Step-2 Add errorPage attribute in other regular pages
+<%@page errorPage="error.jsp" %>
+<%
+  String name = null;
+  out.println("Length : " + name.length());
+%>
+
+Example: Setting/resetting buffer (response buffer) limit.
+
+The container allow '8kb' buffer content by default to represent intermediate result produced by the JSP servlet. If you wish to change, use buffer attribute.
+
+<%@page autoFlush="true" buffer="1kb"  %>
+
+<%
+ for(int i=1;i<=10000;i++) {
+	 out.println("Value : " + i);
+ }
+%>
+
+Note: Buffer's will be emptied when all bytes are written to destination stream/device if autoFlush is set to 'true'
+
+Example: Multiple page using <%@include file%> directive
+
+The @include directive add the content of specified file into current jsp (servlet) page and then after JSP engine will convert current jsp into servlet class.
+
+Step-1  Create country.txt
+<option>India</option>
+<%
+  String name = "Meena";
+  String countries[] = { "Nepal", "UK" };
+  
+  for(String country : countries) {
+    out.println( String.format("<option>%s</option>", country) );
+  }
+%>
+
+Step-2 Create num.jsp
+<%
+ for(int i=1;i<=10;i++) {
+   out.println( String.format("<option>%d  - %d  - %d</option>",i, i*i, i*i*i) );
+ }
+%>
+<hr/>
+<h5>App developed by <%=name%></h5>
+
+Step-3 Code in index.jsp (or any other)
+
+<h1>Sample</h1>
+  <select>
+    <%@include file="country.txt" %>
+  </select>
+   <select>
+    <%@include file="num.jsp" %>
+  </select>
+  <h3><%=name %></h3>
+
+Example: Master layout -- set of files which define a website layout.
+
+1. Create header.jspf and footer.jspf  under /webapp/templates/ folder. (Create templates folder)
+
+/webapp/templates/header.jspf
+<%@page ... %>
+<title><%=title%></title>
+<body>
+  <header>
+     <h1>ABC Site</h1>
+  </header>
+  <nav><a href="index.jsp">Home</a> 
+       <a href="about.jsp">About</a>
+       <a href="contact.jsp">Contact</a>
+  </nav>
+  <section> <!-- content placeholder for other page
+
+/webapp/templates/footer.jspf
+  </section>
+  <footer><p>&copy; ABC Site - 2018</p></footer>
+ </body>
+</html>
+
+2. code in index, about and concat jsps
+
+<% String title = "Welcome" %>
+<%@include file="templates/header.jspf" %>
+<h1>Welcome Home</h1>
+<%@include file="templates/footer.jspf" %>
+
+
+
+
+
+
+
+
+  
+   
+ 
+
+
+
+
+     
+    
+ 
+

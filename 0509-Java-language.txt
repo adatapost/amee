@@ -1,0 +1,244 @@
+Language basics
+================
+
+1. Java supports object-oriented paradigm.
+   -> What an OOP?
+      
+         -> What is an object?  
+            "Partitioned area" of memory is called an "object".
+            OR
+            "Allocated memory (set of bytes)" is called an object.
+
+      An OOP is a program design style that offers :
+           1. Re-usability in the form of Encapsulation, Abstraction and Inheritance.
+           2. Simplify the code or define a modular approach. 
+
+
+    For instance, we've three objects of "int" --> int a,b,c; and each object size is
+    4 bytes (in Java but it can be 8 bytes or 4 bytes in C/C++).
+
+2. Java language is "statically" typed or "strongly" typed programming language.
+
+    The "Java" compiler examine the "type" of data and the type of the "object" at the
+    time of compilation and stops the compilation if it found 'type' mismatch.
+
+    For instance,
+
+          float amount = 10.10;      <-- This will stops the compilation because
+					 10.10 (any value with decimal is consider as
+						double type) double and it can't fit
+						into "float" type (future) object.
+
+      You could use F or f suffix. float amount = 10.10f;
+
+The Types system in Java
+=========================
+We've two main categories:
+  1. Primitive Types -- These types are not part of "Java SE Library" and they are not
+			designed as per OOP. These types are added into the "Java"
+			compiler.
+  2. Reference Types -- Any type that is created using "class", "interface" and "enum"
+			keyword is called "Reference Types".
+
+ 			Java's reference types are known as "Java API - Application
+			programming interface".
+
+ Later in Java SE 2, new classes were introduced which duplicates the functionality of
+ primitives and these classes are known as "Wrappers of primitives".
+
+ Primitive		and its equivalent Wrappers
+-----------------------------------------------------
+  byte			java.lang.Byte
+  short			java.lang.Short
+  int			java.lang.Intger
+  long			java.lang.Long
+  
+  float			java.lang.Float
+  double		java.lang.Double
+
+  char			java.lang.Character  -- Represent unicode charset
+  boolean		java.lang.Boolean
+
+ Memory architecture in Java
+ ---------------------------
+ When we launch/start the Java program (or Start the JVM instance), the memory manager  of JVM allocate 1 MB RAM for the running program to represent following entities:
+      1. Local variables
+      2. Method parameters
+      3. MEthod call and
+      4. MEthod return value or partial result.
+ And this 1 MB RAM is known as "STACK FRAME Memory". The size of Stack Frame is "fixed" and it is no more than or no less than 1 MB.
+
+ If you need more memory or you don't want to use the "stack frame" memory then you can  request the "memory manager" for more memory via the "new" keyword and the memory manager will allocate memory for you and this allocated memory is known as "Heap" or "HEAP FRAME memory". the size of "heap" can be vary from 1 byte to 4GB or more. 
+
+Another service of JVM named "Grabage Collector" continiously check or scan the unreferenced "heaps" and release them as needed. The "GC" cannot free the "STACK Frame".
+
+
+The "primitive" types if used as local vars, method params or return type then they will uses "Stack frame" and if they are used with "class", "interface" or "enum" then they must uses "Heap frame". But, reference types always uses "Heap" -- they never uses "stack frame".
+
+Example:
+
+class Foo {
+   int no;
+}
+
+class Test {
+  public static void main(String []args) {
+     Foo a = new Foo();
+     Foo b = a;
+     a.no = 10;
+     b.no = 20;
+     System.out.println(a.no + " " + b.no); // 20  20 
+  }
+}
+
+Foo a = new Foo(); 
+  1. "a" and "b" are reference variables (pointer variables). Reference variable uses
+      4 (32bits) or 8 (64bits) bytes depends upon the OS and JavaSE architecture.
+  2. Foo a = new Foo(), will  create an object Or it will allocate memory for "instance
+			"member" of the class "Foo" and returns the memory address 
+			of that object to the reference variable "a".
+
+      Here, the reference variable is created in "STack framework (local variable)" whereas an object is created into the "Heap".
+
+Example: Show/draw the stack-heap diagram for the following 
+
+class Student {
+  int roll;
+  String name;
+}
+
+code in main method:
+   Student a = new Student();
+   Student b = new Student();
+   a.roll = 5;
+   a.name = "Meena";
+   b.roll = 6;
+   b.name = "Seema";
+
+Example: What will be the output
+
+class Foo {
+   int no;
+}
+class Test {
+   public static void one(int no) {
+      no = 100;
+   }
+   public static void two(Foo a) {
+      a.no = 100;
+   }
+   public static void main(String []args) {
+      int no = 90, a = 80;
+      one(no);
+      one(a);
+      System.out.println(no + " " + a);  // 90 80
+      Foo k = new Foo();
+      k.no =1;
+      two(k); 
+      System.out.println( k.no ); // 100
+   }
+}//EndClass
+
+
+Note: In Java, method parameters are always "Called by Value". There isn't "called by Reference or address" in Java.
+
+
+
+Autoboxing and autounboxing conversion
+--------------------------------------
+Primitives to "Wrappers" conversion is called "boxing" and
+"Wrappers" to "Primitives" conversion is called "unboxing". The Java compiler supports automatic conversions between premitives and wrappers.
+
+ e.g 
+
+    Integer no = 10;   // primitives to object/wrapper
+    int n = no;        // object/wrapper to primitive
+
+    We can use arithmetic, logical, relational, increment/decrements operators with
+    wrapper objects.
+
+    For instance,  Integer n = 10;
+                   n++;
+    We can also instantiate the wrappers using,
+                    Integer n = new Integer(10);
+
+Example: Examine the range of primitives via wrappers' static properties. (code in main):
+
+  System.out.println(Byte.MIN_VALUE + " " + Byte.MAX_VALUE);
+  System.out.println(Integer.MIN_VALUE + " " + Integer.MAX_VALUE);
+  System.out.println(Double.MIN_VALUE + " " + Double.MAX_VALUE);
+
+Example: Convert wrapper object to primitives. Use xxxxValue() methods.
+  Double d = 10.20;
+  float f = d.floatValue();
+  int n  = d.intValue();
+  byte b = d.byteValue();
+
+Example: Convert primitives to Strings using String.valueOf()
+   int no = 10;
+   String str = String.valueOf( no );
+   System.out.println( str );
+
+Example: String to primitive or wrapper using WrapperType.parseXXXXX(str);
+   float f  = Float.parseFloat("292.33");
+   int  a  = Integer.parseInt("33");
+   System.out.printf("\n%d   %f",a,f);   
+Example: Convert wrappers to Strings using toString();
+   Integer no = 190;
+   String str = no.toString();  // Or String.valueOf( no );
+   System.out.println( str );
+   str = Double.toString(2.3);
+   System.out.println( str );
+
+The Literals 
+=============
+Compiler uses following literals to select appropriate primitives and reference type.
+1. Integer - Any numeric value without decimal place is "int" type
+   10  - decimal number
+   0xA - hexadecimal (0x prefix)
+   012 - octal (0 prefix)
+   0b1010 - binary (0b prefix)
+2. Long - use "L" or "l" suffix
+  
+   10L
+   0xAL
+   012L
+   0b1010L
+3. Float - use "F" or "f" suffix
+   10.10F or 10F
+4. Double (optional D or d suffix
+   10.10 
+   10.10D
+5. Character
+    '\single-char'  - ANSI single character
+    '\u0000'        - \u+four-digit-hex-char for unicode or national or wide charset.
+			It is also known as Universal Text Format (UTF)
+6. Boolean - Use false or true special value
+7. For any reference type, use null to indicate that the object is missing. The 'null' 
+   is compatible to reference types. We can't use null with primitives.
+   e.g int n = null <-- error
+       Integer n = null  <-- OK
+       String name = null <--OK
+8. Use _ (underscore) as number separator for int or float family
+   e.g 0b_1010_1010  
+       10_000.00f
+       0xAAA_AAA_AAA;
+
+Predict the output:
+
+public class Test {
+  public static void main(String []args) {  
+    int n;
+    n++;
+    System.out.println(n);
+  }
+}
+
+Local variables are not initialize automatically so above in code compiler shows an error - 'n' is uninitialized. So we must have to initialize the local variables before we use it.
+
+
+ 
+
+
+
+                    

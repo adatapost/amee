@@ -1,0 +1,52 @@
+create table dept
+(
+  dept_id int primary key auto_increment,
+  dept_name varchar(30) unique not null
+);
+
+create table emp
+(
+ emp_id int primary key auto_increment,
+ emp_name varchar(30) not null,
+ salary decimal(18,2) not null,
+ join_date date not null,
+ dept_id int not null,
+ foreign key (dept_id) references dept(dept_id)
+);
+
+create view view_emp as select emp.*, dept.dept_name
+from emp
+join dept on dept.dept_id = emp.dept_id
+
+1.
+
+package in.amee;
+
+import javax.servlet.http.HttpServletRequest;
+
+public class U {
+	public static String getString( String key, HttpServletRequest request) {
+		String str = request.getParameter(key);
+		if(str!=null) return str;
+		return "";
+	}
+	public static int getInt( String key, HttpServletRequest request) {
+		String str = request.getParameter(key);
+		try {
+		if(str!=null) return Integer.parseInt(str);
+		}catch(Exception ex) {  }
+		return 0;
+	}
+	public static double getDouble( String key, HttpServletRequest request) {
+		String str = request.getParameter(key);
+		try {
+		if(str!=null) return Double.parseDouble(str);
+		}catch(Exception ex) {  }
+		return 0;
+	}
+
+}
+
+
+2.
+

@@ -1,0 +1,78 @@
+Inheritance and method overriden
+--------------------------------
+
+Each object (of a particular class) define a "Virtual Method Table" if it is not created using "final" keyword. So all non final methods have a method reference and these method references are replaced by the method reference of sub-class objects and this feature is known as "Method overriden". With the help of this feature we may improve or enhance to remove the super's implementation from our sub-classes.
+
+Every java class is a sub-class of "java.lang.Object" if "extends" clause is missing. The Java language automatically adds "extends java.lang.Object" instead.
+
+In following example, we want to remove the reference of useless methods of "Object" class from the "Product" class and these useless or unwanted methods are : equals, toString and hashCode.
+
+package com.amee;
+
+public class Product {
+  private int id;
+  private String name;
+  public Product() { }
+  public Product(int id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+  public int getId() { return id;}
+  public String getName() { return name; }
+  public void setId(int id) { this.id = id; }
+  public void setName(String name) { this.name = name; }
+
+  //Override or Replace the equals method to compare the content of two objects
+  @Override
+  public boolean equals(Object obj) {
+   /* Product other = (Product) obj;
+    if(other.id != id) return false;
+    if(!other.name.equals( name)) return false;
+    return true;
+    OR */
+    return hashCode() == obj.hashCode();
+  }
+  // Generate/product int (hash) from the data
+  @Override
+  public int hashCode() {
+    int hash = 5; // 5 is my lucky or secret number
+    hash += id;
+    hash += name != null ? name.hashCode() : 0;
+    return hash;
+  }
+   // This method will be called automatically when used in String Context
+ @Override
+  public String toString() {
+    return id + " " + name;
+  }
+}
+
+package com.amee;
+
+public class App {
+  public static void main(String []args) {
+     Product p1 =new Product(1,"Pencil");
+     Product p2 =new Product(1,"Poncil");
+
+    /* Never compare objects using ==, > < etc. relational operators */
+     if(p1 == p2)  // comparing references -- Useless
+        System.out.println("Eq");
+     else 
+        System.out.println("Not Eq");
+
+     if(p1.equals(p2))
+        System.out.println("Eq");
+     else 
+        System.out.println("Not Eq");
+
+     String s1 = new String("Hello");
+     String s2 = new String("Hello");
+     System.out.println(s1.hashCode() + "  " + s2.hashCode());
+     System.out.println(p1.hashCode() + "  " + p2.hashCode());
+ 
+     System.out.println(s1);
+     System.out.println(s2);
+     System.out.println(p1);
+     System.out.println(p2);
+  }
+}

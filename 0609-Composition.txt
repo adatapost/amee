@@ -1,0 +1,188 @@
+The composition - a design to re-use the code/classes
+======================================================
+There are two ways to re-use the classes:
+  1. composition and
+  2. inheritance
+
+In composition, we uses classes to create instances into another class.
+Consider the following example:
+
+package com.amee;
+
+public class Address {
+  private int pin;
+  private String city;
+  //constructor
+  public Address() { 
+    city = "";   // initialize the fields
+  }
+  public Address(String city, int pin) {
+    this.pin = pin;
+    this.city = city;
+  }
+  //getter setters
+  public int getPin() { return pin; }
+  public String getCity() { return city; }
+  public void setPin(int pin) { this.pin = pin; }
+  public void setCity(String city) { this.city = city; }
+}//EndClass
+
+package com.amee;
+
+public class Student {
+  private int roll;
+  private String name;
+  private Address localAddress;
+  private Address postalAddress;
+  //constructors
+  public Student() {
+    name = "";
+    localAddress = new Address();
+    postalAddress = new Address();
+  }
+  public Student(int roll, 
+              String name, 
+             Address localAddress, 
+             Address postalAddress) { 
+      this.roll = roll;
+      this.name = name;
+      this.localAddress = localAddress;
+      this.postalAddress = postalAddress;
+  }
+  //Getters and Setters
+  public void setRoll(int roll) { this.roll = roll; }
+  public int getRoll() { return roll; }
+  public void setName(String name) { this.name = name;}
+  public String getName() { return name; }
+  public void setLocalAddress(Address localAddress) { 
+    this.localAddress = localAddress;
+  }
+  public Address getLocalAddress() {
+    return localAddress;
+  } 
+  public void setPostalAddress(Address postalAddress) {
+    this.postalAddress = postalAddress;
+  }
+  public Address getPostalAddress() {
+    return postalAddress;
+  }
+}//EndClass
+
+Compile the Address.java and Student.java
+
+>javac Address.java -d .
+>javac Student.java -d .
+
+The switch -d will create package folders/directories at . (current directory).
+
+Or you can compile the code:
+>javac *.java -d .
+
+Now, create a "primary class" - a class having an entry point --main()-- method.
+
+package com.amee;
+
+public class App {
+  public static void main(String []args) {
+     test5(); 
+  }
+  // Test - 5
+  static void test5() {
+     Address a = new Address("Mehsana",34934);
+     Address b = new Address("Surat",322323);
+     Student s = new Student();
+     s.setRoll(3);
+     s.setName("Teena");
+     s.setLocalAddress(a);
+     s.setPostalAddress(b);
+
+     print(s);
+  }
+  // Test - 4
+  static void test4() {
+     Address a = new Address("Mehsana",34934);
+     Student s = new Student(90,"Meena",a,a);
+
+     print(s);
+  }
+
+
+  // Test - 3
+  static void test3() {
+     Student s = new Student(90,"Meena", 
+                    new Address("Patan",4000),
+                    new Address("Surat",29923));  
+
+     print(s);
+  }
+
+  // Test - 2
+  static void test2() {
+     Student s = new Student(90,"Meena", new Address(), new Address());  
+     s.getLocalAddress().setCity("Patan");
+     s.getLocalAddress().setPin(3000);
+     s.getPostalAddress().setCity("Meh");
+     s.getPostalAddress().setPin(40000);
+
+     print(s);
+  }
+
+  // Test - 1
+  static void test1() {
+     Student s = new Student();  
+     s.setRoll(10);
+     s.setName("Reena");
+     s.getLocalAddress().setCity("Patan");
+     s.getLocalAddress().setPin(3000);
+     s.getPostalAddress().setCity("Meh");
+     s.getPostalAddress().setPin(40000);
+
+     print(s);
+  }
+ static void print(Student s) {
+    System.out.println(s.getRoll() + " " + s.getName() );
+    System.out.println(s.getLocalAddress().getCity() 
+                         + " " + s.getLocalAddress().getPin());
+    System.out.println(s.getPostalAddress().getCity() + " " 
+                         + s.getPostalAddress().getPin());
+ }
+}//End class
+  
+  
+Example: Design "Point", "Rectangle", "Circle" classes
+public class Point {
+    private int x,y;
+    //TODO
+}
+public class Rectangle {
+    private Point start;
+    private Point end;
+}
+public class Circle {
+    private Point center;
+    private double radius;
+}
+
+Example: We've
+public class Exam {
+  private String date;
+  private String name;
+}
+public class Subject {
+  private String name;
+  private int totalMarks;
+}
+public class Student {
+  private int roll;
+  private String name;
+}
+public class ExamSubject {
+  private Exam exam;
+  private Subject subject;
+}
+public class StudentExam {
+  private Student student;
+  private ExamSubject examSubject;
+  private int obtainMarks;
+}
+Define necessary test methods to represent StudentExam records.

@@ -1,0 +1,209 @@
+The "jQuery" -- JavaScript library
+==================================
+-> It is open source JavaScript library which provide DOM manipulation functions, AJAX, and Animation functions which can be executed or processed on nearly all modern web-browsers.
+
+[Visit jquery.com to download jquery.js and read the documentation]
+
+jQuery.js
+---------
+There are two .js files:
+   1. Uncompressed for development & debug purpose (also user can contribute to jQuery)
+   2. Compressed or minified for production (small .js file)
+
+Embed one of the two .js into your document and use $ or jQuery reference to access the jQuery methods.
+
+<script src="js/jquery-3.1.1.js"></script>
+
+<script>
+   console.log( $ );  // or console.log( jQuery );
+</script>
+ 
+OR
+
+Use document.body.onload event -- this event will be fire when all DOMs inside the <body> are constructed & loaded.
+
+<script>
+    document.body.onload= function() {
+         console.log('Loading finished!!!');
+         console.log( $ );
+    } ;  
+</script>
+<script src="js/jquery-3.3.1.js"></script>
+
+[Note: It is good pratice to emebd .js documents at the end of web document -- just before the </body> tag.]
+
+
+The jQuery Selector $() method
+===============================
+jQuery uses CSS Style selectors to select one or more DOMs and returns an instance of "jQuery" so we can make a call to another jQuery method. It means the DOMs are encapsulated or wrapped by the jQuery object. DOMs are not exposed directly instead we've to use jQuery methods.
+
+** In following samples, we will assume that we've already embed jquery.js somewhere..***
+
+<h1>Head1</h1>
+<h2>Head2</h2>
+<h1>Head1</h1>
+<p name="help">This is help text</p>
+<div><h2>This is head2</h2> and this is div</div>
+<h2 name="help">Head2</h2>
+<div id="output">Test</div>
+
+<script>
+  //set border to all objects
+   $("*").css("border","1px solid red");
+  //set background blue to all h1
+  $("h1").css("background-color","blue");
+  //set green text to name='help' objects
+  $("*[name=help]").css("color","green");
+  //set font size of "Test"
+  $("#output").css("font-size","3em")
+              .css("color", "#f00")
+              .css("width","300px")
+              .css("height","300px");
+</script>
+
+Methods of jQuery
+-----------------
+1. css(name,value) - Set property
+   css(name) - Get the property value
+2. attr(name,value) - Set attribute
+   attr(name) - get the attribute
+3. html(htmlText) - Set the innerHTML
+   html() - Returns the innerHTML
+4. val(value) - Set the value attribute
+   val() - Returns the value attribue
+5. hide([delay]) - Hide the object
+   show([delay]) - show the object
+   toggle([delay]) - Hide/show the object 
+		   [delay is value in milliseconds]
+6. addClass(cssClassName) -- append a css class name
+   removeClass(cssClassName) - remove a css class
+   toggleClass(cssClass) -- add/remove a css class
+7. Events -- The event names are same as JavaScript except the prefix "on" is excluded.
+    For instance,
+      obj.click( callback )
+      obj.ready( callback ) 
+   Syntax.   obj.eventname( callback )
+8. appendTo( targetDom ) -- append current dom into targetDom
+9. append( sourceDom) - append sourceDom to current DOM
+10. remove() - remove current dom
+
+Note that all above mentioned methods (and there are many more methods) requires an object reference of the jQuery encapculated DOM - jQueryDOM
+
+e.g
+
+   $("h1")  returns a jQuery DOM
+   $("h1").css('color','red');  Text color will be 'red' for all 'h1' objects.
+
+Note that methods which don't returns value/data returns the instance of "jQueryDOM" so we can make a chain of call to these methods.
+
+For instance,
+
+<h1>Hello World</h1>
+
+<script>
+  $("h1").css("color","red")
+         .click( function() {
+             console.log('Clicked');
+          });      
+</script> 
+
+Inside the event, we can reference the active/current object using $(this) expression.
+
+  $("h1").css("color","red")
+         .click( function() {
+             $(this).hide(1000); // Hides the currently clicked
+          });   
+
+Example: 
+
+<input type="number" id="no1"/>
+<input type="number" id="no2"/>
+<a href="#" id="btnSum">Sum</a>
+<div id="output"></div>
+<script>
+    let handler = function() { 
+       $('#output').html( 'Sum : ' + ( parseFloat($('#no1').val()) 
+    	        + parseFloat($('#no2').val()) )).css("color","red");
+    };
+    $('#btnSum').click( handler );
+
+    $('#no1').keyup( handler );
+    $('#no2').keyup( handler );
+</script> 
+
+
+<input type="number" id="no1"/>
+<input type="number" id="no2"/>
+<a href="#" id="btnSum">Sum</a>
+<div id="output"></div>
+<script>
+    function handler() { 
+       $('#output').html( 'Sum : ' + ( parseFloat($('#no1').val()) 
+    	        + parseFloat($('#no2').val()) )).css("color","red");
+    }
+    $('#btnSum').click( handler );
+
+    $('#no1').keyup( handler );
+    $('#no2').keyup( handler );
+</script> 
+
+Example: addClass, removeClass and toggleClass
+
+<h1>Hello World</h1>
+<button id="bt1">Set Red color</button>
+<button id="bt2">set border</button>
+<script>
+  $("#bt1").click( ()=>  $("h1").toggleClass('red') );
+  $("#bt2").click( ()=>  $("h1").toggleClass('border') );
+</script>
+
+Example: Create the DOM and append them into existing DOMs.
+
+$("<elementName>") syntax creates a new DOM.
+
+<div id="output"></div>
+
+<script>
+  let a1 = $("<h1>");
+  a1.html("Heading1").css("color","red");
+  
+  let btn = $("<button>").html("OK").css("color","green");
+
+  //append these two objects into #output 
+
+  $('#output').append( a1 );
+  $('#output').append( btn );
+
+  $('#output').append( $('<h2>').html('Heading2') );
+
+  //We can use newDom.appendTo( existingDOM )
+
+  $("<h3>This is sample</h3>").appendTo( '#output' );
+  $("<h4>").html("Heading4").appendTo( '#output' );
+</script>
+
+Example: Populate the <select>
+
+ <select id="city"></select>
+ 
+ <script>
+   let cities = ["Meh","Pat","Raj"];
+   for(let index in cities) {
+      $('<option>').html( cities[index] ).appendTo('#city');
+    }
+  </script>
+
+Example: Add/remove the objects
+
+<div id="city"></div>
+ 
+ <script>
+   let cities = ["Meh","Pat","Raj"];
+   for(let index in cities) {
+      $('<button>').html( cities[index] )  
+     .click( function() { $(this).remove(); } )  
+      .appendTo('#city');
+    }
+  </script>
+  
+  

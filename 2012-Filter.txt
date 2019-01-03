@@ -1,0 +1,113 @@
+Filter component
+==================
+The "Filter" component behave just like servlet but it is not a servlet. In fact, the filter component intercept the "requests" and "responses" as per given "url" pattern. That means each filter component receive requests before these requests processed by the "servlets". So, the "filter" does something special to the "request or request data" before the request is received and processed by the servlet.
+
+Basically we can use filter for the following purposes:
+  1. Authorization & Authentication (Login system - examine the user's credentails and authority)
+  2. Filter the requests/responses (remove unwanted verbs, text etc)
+  3. Zip/Unzip the data (Compress) 
+  4. Cypher request/response 
+  5. Filters can be used to process the data (without any user interface), image process,      downloadig, streaming etc.
+
+How filter works?
+
+  Client
+  Request ----> Filter1 ---> Filter2 ---> ... FilterN ..-> Servlet1 --> Sevlet2 -> ServletN -->
+	<------         <---         <---              <-------------------- Output/resonse --|
+
+There may be one or more filter.
+
+Each filter works based upon the "url" pattern assign to it.
+
+The "Filter" component must be public.
+
+The "Filter" class must implements javax.servlet.Filter interface and override its methods.
+
+The "Filter" interface has three methods (to be override):
+ 1. public void init(FilterConfig config)  { }
+ 2. public void destroy() {}     
+ 3. public void doFilter(ServletRequest request, 
+			ServletResponse response, 
+			FilterChain chain) 
+
+The "init" method will be called once when "filter" is instantiated by the container and also "destroy" will be called once when that particular filter is "out of service".
+The doFilter() method will be called each time when mapped "url" matches the request "url".
+
+In doFilter, we have ServletRequest, ServletReesponse instances so we can perform all those actions which are performed in "Servlet" except we must have to wrap them into HttpServletRequest and HttpServetResponse types.
+
+The important feature of "filter" is to select next filter or next servlet in a "chain" by calling FilterChain's doFilter(request,response) method. If you don't want to chain to be continue then don't call the "chain.doFilter()" method.
+
+Example: Define a "Filter" which insert "Hello & Welcome" at begin of each request's response and insert "Bye" at the end of request's response of all resources at / (root).
+
+
+@WebFilter("/*")
+public class SampleFilter implements Filter {
+	public void doFilter(ServletRequest request, 
+			ServletResponse response, 
+			FilterChain chain) throws IOException, ServletException {
+		
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		
+		res.getWriter().write("Hello & Welcome!");
+		chain.doFilter(request, response);
+		res.getWriter().write("Bye");
+	}
+ 	public void destroy() {	}
+	public void init(FilterConfig fConfig) throws ServletException {}
+}
+		
+Example: Create user-friendly URI and parse it.
+
+@WebFilter("/photo/*")
+.... code in doFilter:
+
+
+	  String []ar = req.getRequestURI().split("/");
+	    int id = 0;
+	    String type = "unknown";
+	    if(ar.length==5) {
+	    	id = Integer.parseInt(ar[4]);
+	    	type = ar[3];
+	    }
+		
+  	    res.getWriter().write(type + " ID : " + id);
+
+
+Example: Edit previous code to return "image" of student or "tutor" of given "id", returns nothing if given student or tutor record is not exists into table.
+
+Hint:
+
+   if("student".equals(type.toLowerCase()) { 
+      //TODO 
+   } else if("tutor".equals(type.toLowerCase()) {
+      //TODO
+   }
+You should design "dao" methods in StudentDao and TutorDao classes.
+Hint:
+
+ public byte[] getPhoto(int id) {
+   try(Db x = new Db(".....")) {
+     x.getSt().setInt(1,id);
+     Object []ar = x.row();
+     if(ar == null) return null;
+     return (byte[]) ar[0];
+   }catch(Exception ex) { } 
+ }
+
+Example: Restrict the some of the URLs or folders. In this example, we restrict the "/css/*" "/images/*" and "/js/*" resources.
+
+@WebFilter({"/css/*","/js/*", "/images/*"})
+public class SampleFilter implements Filter {
+ 	code in doFilter:
+	
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		//req.getRequestDispatcher("/index.jsp").forward(request, response);
+		//OR
+		res.sendRedirect("/app1/index.jsp");
+	
+
+
+	
+  

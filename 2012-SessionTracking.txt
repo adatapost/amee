@@ -1,0 +1,48 @@
+The Session Tracking OR State Management
+=========================================
+As we know that HTTP protocol is "stateless". It means there will be no request or response record is being preserved. Each request is consider as a fresh record beause HTTP don't persists/saves the request as well as it don' t remember the client or its request. Similar, the client (web-browser) cannot remember the server's response.
+
+In case, if we want to be remembered, we must have to write our identity into database or into physical storage so on next subsequent requests we read the data from the database and also update as needed. But it seems complex because in this case, each request and data are to be persisted in database resulting unnecessary or useless actions on database performed on each request/response.
+
+The JavaEE we has a feature called "Session" which is used to identify the "client" and save data based upon the "user's identity". The "Session" is a server side object of class HttpSession and will be created automatically when very first request from client is received and remains into server memory till client is connected or context is not removed or session is invalidated (removed) programatically. The "Session" object has a dictionary (map) and we can set/get/remove data to/from the object via setAttribute, getAttribute and removeAttribute.
+
+To obtain the session object in servlet, use request.getSession() method. Whereas JSTL allow scoped data and we can create them via <c:set> or remove via <c:remove> or get via <c:get> tags.
+
+Example: We've an app hs three roles (types of users) - 1. Admin, 2. Institute and 3. Student
+
+For the sack of simplicty, we've all programs/servlets related to "admin" under the "/admin/*" url, institute programs/servlet under "/institute/*" url and student programs/servlets under "/student/*".
+Now, write filters (three filters - each for a role) to prevent the unautorized entry or prevent the use of resources of admin, institute or student without login and approriate permissions.
+
+Step-1 We've following folders that contains "views" of three users:
+
+webapp/
+      |
+      |----/admin/
+      |
+      |----/student/
+      |
+      |----/institute/
+      |
+      |----/images/
+      |----/css/
+
+
+
+Step-2 We've some servlets and jsps for "admin", "student", and "institute" with same named url pattern. For instance,
+
+ /admin/user-accounts <-- Read/update all users record
+ /institute/user-account <--  Read / update single record or currently logged users data
+ /student/user-account   <--- Read / update single record or currently logged users data
+
+There are some "public" resources which are not prefixed using "admin", "student" or "insttitute".
+ For instance,  /login
+                /logout
+                /registration
+                /recover-password   
+                /about
+                /contact
+                /search
+
+
+
+

@@ -1,0 +1,1097 @@
+The Web Client - Browser
+========================
+The web-browser is the most complex software a computer system has. In fact it is an operating system for many devices. The web-browser does many tasks independent of the underlying operating systems.
+
+A web-browser,
+   1. Implemented the HTTP client protocol - Request and Response mechanism
+   2. Parsers - HTML, XML, SVG, CSS -- To process the markup and style language
+   3. JavaScript Engine - A complete runtime environment.
+   4. Developer Tool - A debuging tool for the developers
+   5. Graphics Engine - Paint the content and many more...
+
+How the received (response) content is processed by the browser?
+---------------------
+  1. First of all, HTML markup is parsed via HTML Parser (Which uses DOM API). Each and every HTML
+     tag will be transformed into an object called "HTML object or Node or Element object" and 
+     then these objects are adjusted into document-tree whose root object is <html> and it has 
+     two child <head> and <body>.
+
+     APIs in browsers uses HTMLHtmlElement, HtmlBodyElement, HtmlHeadElement , etc... style 
+     types (classes).
+
+  2. Once all the objects in a document-tree are added, web-browser starts CSS Engine/parser to
+     parse the CSS rules and apply them on loaded "HTML objects".
+     The web-browsers also parse HTML & CSS markup/style concurrently so the HTML object's style is set immediately when it is created and this kind of approach is known as "Progressive Rendering". 
+
+      It is good practice to use "progressive" rendering technique: i.e Create HTML object and       apply "style" rule immediately.  
+
+      For "progressive rendering", embed "css" resources inside the <head> tag.
+
+      e.g   
+
+     <head>
+        <meta charset="utf-8" />
+        <title>Title is required</title>
+        <link rel="stylesheet" href="style-resource-uri" />
+     </head>
+     <body>
+        .....
+        .....
+        .....
+        <script> <!---- JavaScript should appear at the end of body --->
+            //JavaScript code for those HTML objects which are exists in document-tree
+        </script>
+     </body>
+ 3. Then after, the JavaScript Engine parse the code which is embed in <script> </script> HTML
+    tag. 
+
+    It is important to note that you may embed JavaScript code in any section of HTML body  
+    object but it is good practice to use the JavaScript code just after the HTML objects are
+    created.
+
+    Sometimes, large JavaScript code resource will stop or block the HTML & CSS parsers so we have
+    to embed JavaScript "lib" like - jQuery, or custom lib at the end of body element.
+
+4. Meantime the Graphics Engine start the rendering HTML objects.
+
+
+The rendering modes of browser
+-------------------------------
+Browsers have different-different "standards" for HTML, CSS and JavaScript. In fact, a browser has different-different implementations of HTML standards ( current standards is HTML5 and older were 4,3 etc), CSS stadnards (Current is 2.1 also called CSS3), and JavaScript (also called ECMASCript or ES) standards (Current is ES6 and older wehre ES5 etc).
+
+In order to render and use the latest & stable "standards", we must instruct the browser to which "standard" a document adhere and this can be done via <!doctype html>. 
+If <!doctype html> is missing then browser select "random" standards to process the HTML,CSS and JavaScript and ofcourse output will be always strange/unexpected --- this kind of rendering mode is called 'quirk mode'.
+
+We must not use 'quirk mode'. We must use 'standard mode' by setting <!doctype html> -- will select latest, stable Parsers/Engines.
+
+HTML Elements classification based upon CSS's display property
+-----------------------
+They falls into two main group:  
+  1. Block elements -- Element's width is computed as per their parent width.
+                       We can change height/width of block elements using CSS properties.
+
+  2. Inline elements -- Height & width automatically calculated based upon the content they
+			hold. We can't change the height/width.
+
+ 			span, em, strong, u, b, i, label, code, kbd etc are example of 'inline'
+			elements.
+
+ There are many more display properties which compines 'block' and 'inline' behavior called -inline-block and table etc.
+
+Classification of HTML elements by their usage
+-------------------------------
+1. Sementic elements -- Elements can be used for different-different purposes. These elements don't have special user interface.
+
+Examples:   div, span, label, header, footer, section, nav, article, aside 
+
+  <div>  <!--   Container -->
+    <div>  <!-- Heading  -->
+       <h1>Sample App</h1>
+    </div>
+    <div> <!-- Menu -->
+       <a href="#">Home</a>
+    </div>
+    <div> <!-- Main body -->
+       <h3>Welcome</h3>
+    </div>
+    <div> <!--  Footer -->
+      <p>&copy; Sample App - 2018
+    </div>
+  </div>
+
+OR
+
+  <section>
+    <header>
+       <h1>Sample App</h1>
+    </header>
+    <nav>
+       <a href="#">Home</a>
+    </nav>
+    <article>
+       <h3>Welcome</h3>
+    </article>
+    <footer>
+      <p>&copy; Sample App - 2018
+    </footer>
+  </section>
+
+2. Text elements - p, strong, em, i, u, code, abbr, kbd are some of the text elements.
+
+<p>
+   The <strong>Paragraph</strong> <em>is</em> a <u>text-element</u>.
+   You want to learn <code>JavaScript</code>, <code>HTML</code> and
+   <code>CSS</code>.
+   
+   The <abbr title='HyperText Markup Language'><code>HTML</code></abbr> is the 
+   language to <em>present</em> data on the web.
+  </p>
+  <p>
+   Press <kbd>Ctrl+Shift+I</kbd> or <kbd>F12</kbd> to open the <strong>Developer Tool</strong>
+  </p>
+
+3. Form elements or input elements.
+
+1. input type  = text | password | radio | checkbox | number | range | color | hidden | button
+                | search | date | email | url 
+2. button
+3. textarea - multiline edit text
+4. select - dropdown and listbox
+
+
+4. Emebd elements -- These elements request the "resource" and embed the response.
+
+Example:  img, picture, link, script, object, embed, audio, video
+ e.g <video src="uri"></video>
+     <script src="uri.js"></script>
+
+
+5. List elements - ordered <ol> and unorered list <ul>
+6. Table elements - table, thead, tfoot, tr, td, th
+
+CSS Properties
+==============
+1. margin:  top  right bottom left; 
+   margin: value;  -- set value for all four edges
+   You may use individual properties -- margin-left, margin-top, margin-bottom, and margin-right.
+
+   Use 0  (don't add suffix cm, px or in or % or em etc) when you want to set margin to 0.
+
+   Use 'auto' keyword if you allow browser to set margin automatically (implicitly).
+
+2. padding: top right bottom left;  -- add padding at individual or all four edges
+   padding: value; 
+   padding-left, padding-right, padding-top and padding-bottom
+
+Measurement units -- we've absolute units (px, in, cm, pt) and relative units( %, em, dp). Never use absolute units to set the 'fontSize' -- for font size, use relative unit.
+
+3. height, width - To set absolute height & width
+4. min-height, min-width - to set minimum height & width
+5. overflow: scroll | auto; - Overflow occurs when you set fixed height/width.
+
+Example-1 Center the "block" element
+  -> set width and leave right & left margin 'auto'
+
+.container {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.center-block {
+  margin: 0 auto;
+}
+.w-100 { width: 100px; } 
+.w-200 { width: 200px; }
+.w-300 { width: 300px; }
+
+.border {
+  border: 1px solid #aaa;
+}
+
+<div class='container border'>
+  <h1 class='w-300 border'>Sample1</h1>
+  <div class='w-200 border'>Sample2</div>
+</div>
+
+NOTE: CSS properties & selector names are case-sentitive. 
+      Always use lowercase to name the selectors.
+
+
+Example-2 Reset margin for elements
+
+html, body, div, header {
+  margin: 0;
+}
+
+Example-3 overflow property [ overflow: hidden | visible | auto |scroll ]
+
+.box {
+  height: 100px;
+  width: 100px;
+  overflow: scroll;
+  border: 1px solid #aaa;
+}
+
+<div class="box">
+  add here some lines of text....
+</div>
+
+NOTE: Use min-height property if you wish to not to use overflow or scroll feature.
+
+6. color: color-value;
+   color: rgb(red,green, blue);  rgb function
+   
+   color-value can be named color or hex-value. 
+   e.g
+      color: #ff0000;  /* red */
+      color: #f00;     /* red - use single hex char if all three color hex char has repeatated 			value. */
+      color: #f23a;  <-- Invalid
+      color: #334455  or color: #345;  <-- Valid
+   
+   color: rgb(255,0,0);   /* three int decimal value */
+
+   color: rgba(255,0,0,0.2);   /* Alpha means transperency and value should be in between 0 to 1*/
+ 
+   color; hsl( hue (0 to 360), saturation( 0 to 100%), light( 0 to 100%) )
+
+   e.g color: hsl(180,100%,50%);
+
+7. background-color: value | #hex | rgb(..) | rgba(..) | hsl(...) - Paint the background with
+       specified color.
+
+   background: value ....;   - This is the shorthand property  to paint background with image.
+
+   background: value url(image-uri) options;
+
+Example: solid color and image
+
+.color-test {
+	height: 300px;
+	width: 300px;
+	border: 1px solid #aaa;
+	background: hsl(180,100%,50%) url(../images/small.png) no-repeat center center;
+}
+
+<div class='color-text'></div>
+
+
+JavaScript Language
+====================
+
+It is 'dynamic', supports oop and functional programming, and is the only language to write client code of web app. 
+
+JavaScript has no explict datatypes generally found in C/C++,/Java languages. Of course, JavaScript has datatypes but they are associate with value/data (literals or syntax).
+
+The variables and types
+------------------------
+JavaScript uses 'window' namespace to persist the objects of any kind (simple or complex or function or class etc).
+
+There are number of syntax to create variables:
+  1.   varName = value;    <--- Avoid this. It is old specification syntax
+  2.   var varName = value;  
+  3.   let varName = value;    --- This syntax is introduced in ES6
+
+We will use 'Developer Tool' to understand the JavaScript language basics. There is a tab called 'Console' which will be used to dump exceptions/errors, information or log text or dump the object content.   
+
+We will use console.log( value1, value2, ..) method to display data in the form of text.
+            console.dir( value )  -- It displays object content along with methods/attributes
+
+Example: How to declare/create variables
+
+<script>
+  n1 = 10;   
+  var n2 = 20; 
+  let n3 = 30;     
+
+  console.log( n1, n2 , n3 );
+  console.log( window.n1, window.n2, window.n3 );
+</script>
+
+The 'let' keyword create an variable which will not be added into the 'window' namespace and will be discarded as soon as the block ends. We must have to use 'let' instead of 'var' however, if we want to push/create an object under 'window'  namespace then we have to use 'var'.
+
+Basic Types  (Built-in types)
+------------
+1. Number - It is 64 bits long to represent numeric data (double, float, int, long etc.)
+2. String - It is a unicode charset collection of characters denoted with single or double quotes.
+	   e.g let name = 'Rajesh';
+               let city = "Mehsana";
+3. boolean - special vaule true or false represent boolean however following value also consider 		the 'falsy':
+
+		null
+		0
+		0.0
+		""  or ''   empty string
+                NaN   (Not a number - error)
+                undefined 
+4. function - Function object or class definition
+5. Array    - Array/list -- JavaScript array is dynamic list whose size can be grows or shrinks
+6. RegExp  -  Regular Expression
+7. Object  - Custom object - JSON - JavaScript Object Notation
+8. Date    - Date object
+9. Map      - Map object
+10. Math    - Math functions
+11. document - DOM's Document object which represent the DOM APIs.
+12. window   - The 'window' namespace/object -- define a scope of the objects.
+
+
+Example: Examine the datatype of data/variable using typeof keyword
+
+    let n1;
+    console.log( typeof(n1));  // undefined
+    n1 = 10;
+    console.log( typeof(n1));
+    n1 = 'Hello';
+    console.log( typeof(n1));
+
+Example: JavaScript Engine shows an exception when a given name is not exists.
+
+   let n1 = 10;
+   console.log( n2 );  // Error - n2 'undefined'
+
+Example: Understand the scope of 'name' (variable):
+
+for(var i = 1;i<=10; i++) {
+  console.log(i);
+}
+console.log( 'At end  ', i);
+
+Now, use - for(i=1;...) and see what happen?
+and also use for(let i=1;... ) run the program.
+
+So any variable created with or without var will be placed into 'window' namespace. Only 'let' will create local-scope/block scope variable.
+
+However, there is an ambuigity with 'var' keyword. Consider the following example:
+
+<script>
+   var no = 10;
+   function test() {
+      sq = no * no;
+   }
+   console.log( no, sq );  // Comment this line and see what happen?
+   test();
+   console.log( no, sq );
+</script>
+
+Now, change the statement in test():
+
+    var sq = no * no;   
+
+ If 'var' is used inside the function then the name will be not added into 'window' namespace i.e. it will be created in new namespace which is the name of function itself and this namespace 'test' will be cease to exists once function's execution is over.
+
+Example: Represent strings and examine the methods
+
+let nm = 'Seema';
+console.log( nm, nm.toUpperCase() );
+
+Or Open Developer Tool + Console + Type following at > prompt
+>let nm = 'Seema'
+>nm
+Seema
+>nm.length()
+
+
+Example: Escape the single and double quotes
+
+let str1 = "The 'red' sun and 'red' rose";
+let str2 = 'The "red" sun and "red" rose";
+let str3 = '{"no": 10, "name": "Rajesh"}'; // JSON string
+let str4 = "The \"red\" sun and \"red\" rose";  // Escape the double quote
+let str5 = 'The \'red\' sun';  // Escpe the single quote
+
+console.log( str1, str2, str3, str4, str5);
+
+Example: Number to string using 'toString' ,toFixed, toXXXXXX methods
+
+let no = 10022323.2334;
+console.log ( no.toString() );
+let s1 = no.toFixed(2);
+console.log( s1 );
+
+Example: String to nuber using parseInt and parseFlot functions.
+
+let s1 = '2323';
+let n1 = parseInt( s1 );
+let n2 = parseFloat(s1);
+console.log(n1, n2 );
+
+parseXXXX method returns 'NaN' is parse failed
+
+e.g
+
+ let s1 = 'abc';
+ let n1 = parseInt( s1 ); 
+ console.log( n1 ) ;  // NaN - which is a falsy value
+ if(!n1) {
+   console.log(n1);  
+ } else {
+   console.log('Invalid numeric string data');
+ }
+
+Example: Falsy value test
+
+let n1 = 0; // use '' or ""  or false  or null or undefined
+if(n1) {
+  console.log('Exists', n1);
+} else {
+  console.log('Empty');
+}
+
+The Arrays
+==========
+You can create arrays using:
+
+ 1. [ ]  -- subscript syntax
+    let nos = [11,22,33,44];
+ 2. Array() object
+
+    let nos = new Array(10,20,30);
+
+Example: Array has 'length' property which returns count of elements.
+
+ let nos = [22,33,22,44];
+ console.log( nos.length );
+ //Dump the arrays
+ console.dir( nos );
+
+ //Add new element at given index or replace it
+ nos[30] = 300; 
+ nos[0] = 333;
+
+ console.log('Size', nos.length );
+ // Don't use simple for loop to traverse the arrays - use for in loop always 
+ for(let i =0;i<nos.length;i++) { 
+    console.log( nos[i]);
+  }
+  nos[10] = 90;
+
+  //for in loop - foreach loop - This loop returns an index of non-empty element
+
+  for(let index in nos) {
+     console.log( index, nos[index] );
+  } 
+
+Example:
+
+let cities = [ "Jamnagar",
+"Mehsana",
+"Patan",
+"Rajkot",
+"Ahmedabad"];
+console.log( cities );
+
+cities.sort();
+for(let i in cities) {
+  console.log( cities[i] );
+}
+
+Example: splice() method - to insert/remove the elements
+
+nos = [11,22,33];
+//insert at 0 index
+nos.splice(0,0,300,400);  // splice( index, deleteCount, newElements....)
+//remove at 2nd index -- single element
+nos.splice(2,1);  
+//remove 2 elements from 2nd index
+nos.splice(2,2);
+//remove 2 elements frm 2nd index and insert new five elements
+nos.splice(2,2,333,444,555,666,777);
+
+Example: push() and pop() method of an array
+Exmaple: indexOf - search an element and returns index if found, returns -1 otherwise
+//empty array
+let nos = [];
+nos.push(33);
+nos.push("Hello");
+nos.push( [22,33,44] ); // nested array
+console.log( nos.indexOf("Hi") );
+nos.pop();
+nos.pop();
+
+The function object --- procedure/function
+==========================================
+
+There are three syntax to define a function/procedure:
+  1. using the 'function' keyword we have two syntax:
+      1. Declarative function
+
+            function functionName(parameters.....) {  
+              //TODO  
+            }
+   
+      2. Anonymous function or variable function
+
+            Anonymous function further defined using one of the two syntax:
+
+              1.  let varName = function(parameters....) {
+                    //TODO
+                  };
+
+              2. let varName = (parameters...) => { }   // Is called 'Arrow' function 
+                                                        // Lambda expression in Java
+  2. Arrow function syntax:   (args..) => {.... }
+
+Example:
+
+<script>
+   // Declarative function
+   function sayHello() {
+     console.log("Hello!");
+   }
+   function sum(start,end) {
+	  let s = 0;
+	  for(let i=start;i<=end;i++) {
+		  s += i;
+	  }
+	  return s;
+   }
+   //variable functions / anonymous function
+   let mul = function(no1,no2) {
+	   return no1*no2;
+   };
+   let add = (p,q) => p+q;
+   let printSeries = (p,q) => {
+	   for(let i=p;i<=q;i++) {
+		   console.log( i );
+	   }
+   };
+   
+   // call the functions
+   sayHello();
+   let result = sum(1,10);
+   console.log( result );
+   console.log( sum(5,50));
+   console.log( mul(4,5) );
+   console.log( add(4,5) );
+   printSeries( 10,20);
+  </script>
+
+IMPORTANT: The order of calling the declarative functions have no importance or significance. The JavaScript Engine first load the declarative functions definition before executing the statements at <script>.
+
+But, anonymous functions must be called after its definition because they are evaluted during program/code execution.
+
+<script>
+   sayHello();
+
+   function sayHello() {
+   }
+</script>
+
+is perfectly valid but,
+
+<script>
+   sayHello();
+   let sayHello = () => console.log("Hello!");
+</script>  wont work because sayHello variable is not exists at line # 1.
+            
+
+Call the function via events of HTML DOMs
+===========================================
+
+As we know that each HTML object (DOM) has number of events - placeholders where user can plug/attach her/his code. We can call the function based upon the 'event' we subscribe. Here is an example:
+
+<div onclick="sayHello()">Hello!</div>
+  <a href="#" onclick="sayHello()">Hello!</a>
+  <button onclick="sayHello()">Hello!</button>
+  <script>
+   function sayHello() {
+     console.log("Hello!");
+   }
+</script>
+
+Each HTML DOM has number of properties which begins with "on" prefix and these properties takes function object reference and hance this assigned function object is also called "Event Handler".
+In above example, 'onclick' is an event (pointer variable) whereas 'sayHello()' is called event Handler (function).
+
+Pass parameters to event handler:
+
+<p onclick='sayHello("Reena")'>Reena</p>
+<button onclick='sayHello("Meena")'>Meena</button>
+
+<script>
+  function sayHello(name) {
+    console.log("Hello,", name );
+  }
+</script>
+
+The 'arguments' parameter - an array which takes/receives the parameters
+-----------------------------------------------
+<script>
+  function sayHello() {
+    for(let index in arguments) {
+      console.log('Hello, ', arguments[index] );
+    }
+   }
+
+  //call the function
+   sayHello();
+   sayHello("Reena","Meena","Mohan");
+</script>
+
+Attach or detach event handler programatically
+----------------------------------------------
+Use addEventListener( 'eventName', functionObject ); and
+    removeEventLister( 'eventName', functionObject );
+ methods of HTML Objects (DOMs) to attach or detach handlers dynamically or programatically:
+
+
+<script>
+  function sayHello() {
+    console.log("Hello,", arguments[0] );
+  }
+  //Attach/detach the event 'click' with 'window' object
+  window.addEventListener('click',sayHello);
+  // window.removeEventListener('click',sayHello);
+</script>
+
+The Custom Object using { } - JavaScript Object Notation Syntax (JSON)
+========================================================================
+We can define custom object using following syntax:
+
+{
+  "propertyName": value,
+  "propertyName": value,
+   .....
+}
+
+The "proeprtyName" must be a string (single or double quoted) but value can be any.
+
+<script>
+ let emp = {
+   "id": 10,
+   "name": "Reena",
+   "graduate": true,
+   "salaries": [333,44,555,66,77,33,22,556]
+ };
+
+ // Read the properties (Dump)
+ console.log( emp ); //OR 
+ console.dir( emp );
+
+ // Read the individual property using . dot operator or [ ] subscript operator
+ console.log( emp.id, emp.name,  emp["id"], emp["name"] );
+ for(let i in emp.salaries ) {
+   console.log( emp.salaries[i]);
+ }
+
+ // Change the properties
+ emp.id = 90;
+ emp["name"] = "Seema";
+ //add new property
+ emp.address = "12 - PQR Society";
+ emp.city = "Mehsana";
+
+ console.log( emp );
+
+ // Delete the property
+ delete emp.id;
+ console.log( emp );
+</script>
+
+Example: Traverse the object properties using for in loop
+ for(let index in emp ) {
+   console.log( index );
+ }
+
+Example: List of objects (Students)
+
+let students = [];
+students.push( { "roll": 10, "name": "Reena" } );
+students.push( { "roll": 20, "name": "Meena" } );
+
+for(let index in students ) {
+  console.log( students[index].roll , students[index].name );
+}
+
+Example: Pass function object to array's methods -- sort by roll
+    students.sort( (p,q) => p.roll - q.roll );
+    //Sort by name
+    students.sort( (p,q) => p.name.localCompare(q.name) );
+
+IMPORTANT - Passing a "function object" to another function is known as "callback" function.
+
+            In sort() method, we've passed 'compareFunc' which will be called by 'sort() method'
+            implicitly.
+
+
+Example: Object's function property -- In member function, we must have to use 'this' keyword/variable to qualify the object's properties otherwise they will be consider as local or global scope variable.
+
+let student = {
+		"firstName": "Reena",
+		"lastName": "Patel",
+		"fullName": function() {
+			return this.firstName + " " + this.lastName;
+	 }
+};
+console.log( student.fullName() );
+
+Define the "Type or class" using function keyword
+==================================================
+Syntax:
+
+   function ClassName(constructor argument....) {
+      //fields 
+      //methods
+      // ---- All fields and methods must be qualified with 'this' variable
+   }
+
+Example:
+
+<script>
+ //Define a class
+ function Emp() {
+	 // fields
+	 this.id = 0;
+	 this.name = "";
+
+	 //methods
+	 this.setEmp = function(id,name) {
+		 this.id = id;
+		 this.name = name;
+         }
+ }
+
+ function Student(roll,firstName, lastName) {
+	 this.roll = roll; // constructor parameters
+	 this.firstName = firstName;
+	 this.lastName = lastName;
+
+	 this.fullName = function() {
+		 return this.firstName + " " + this.lastName;
+	 }
+ } 
+
+ // Create objects
+ 
+ let e1 = new Emp();
+ let s1 = new Student(10,"Reena","Patel");
+ let s2 = new Student();
+ e1.setEmp(20,"Teena");
+ console.log( e1.id, e1["name"]);
+ console.log( s1, s1.fullName() );
+ console.log( s2 );
+</script>
+      
+Example - Design a model to represent "students"
+
+function Student(roll, name, english, maths, science) {
+  this.roll = roll;
+  this.name = name;
+  this.english  = english;
+  this.maths = maths;
+  this.science = science;
+  
+  this.total = function() { return this.maths + this.science + this.english; }
+  this.percent = function() { return this.total()/3.0; }
+}
+function StudentRepository() {
+  this.students = [];
+  this.add = function(std) {
+     this.students.push(std);
+  }
+  this.remove = function(index) {
+     this.students.splice(index,1);
+  }
+}  
+
+let repo = new StudentRepository();
+repo.add( new Student(1,"A",66,77,88) );  
+repo.add( new Student(2,"B",66,77,88) );
+repo.add( new Student(8,"C",96,77,88) );
+for(let i in repo.students) {
+  console.log( repo.students[i] );
+  let p = repo.students[i];
+  console.log( p.total(), p.percent() );
+}
+
+NOTE: Add sort, search (on roll, name etc fields) into StudentRepository component.
+
+Example: Design components to represent an invoice (bill)
+         Main entities are: Customer, Products (one or more), Bill (no, date, bill amount)
+         a Product might contains name, unit of measurement, qty, rate, discount etc
+
+The Document Object Model - DOM Api and HTML objects
+=====================================================
+As we know that each HTML tag will be turned into an object and to access the properies/methods of this object we must have to use the DOM APIs. In other words, DOM API exposes the HTML objects to the developers.
+
+The DOM API's methods and document reference is obtain by the built-in object called "document". We can use document.body, document.head and many other properties to directly access the top-level HTML objects. However, if we want to create new HTML objects or wish to update the existing tree or search/remove an existing object then we must have to use DOM API.
+
+1. document.createElement("element") - returns an object of specified element.
+
+<script>
+  let obj = document.createElement("h1");
+  //set object's properties
+  console.log( obj );  // learn properties of object via Developer Tool's console
+  obj.innerHTML = "Welcome to DOM API!";
+  obj.style.color = "red";  // update CSS object
+  obj["style"]["backgroundColor"] = "yellow";
+  
+  //Attach the newly created object to the existing document-tree i.e document's body
+  document.body.appendChild( obj );
+</script>
+
+Example: Add six heading objects to body
+
+ for(let i = 1;i<=6;i++) {
+  let obj = document.createElement("h" + i);
+  .... same as previous example
+ }
+
+2. document.getElementsByTagName("tagName") - Returns a nodeList of all HTML object of given 					     tagName.
+3. document.getElementsByClassName("clasName") -- Returns a nodeList based upon given CSS class
+
+4. document.getElementsByName("name attribute") - Returns a nodeList by given value of name 						attribute.
+5. document.getElementById("id-attribute") - Returns a single object based upon given "id" value
+
+6. document.querySelector("class/element/id/attribute selector") - Reutrns an object or a nodeList
+				based upon the CSS style filter.
+
+Example:
+
+<h1>One<h1>
+<h2>Two</h2>
+<h1>Three</h1>
+
+<script>
+  let objs = document.getElementsByTagName("h1");
+  console.log( objs.length ); // returns 2
+  for(let i =0;i<objs.length;i++) {
+     let obj = objs.item(i); // returns 'i' th item/object
+     console.log( obj, obj.innerHTML );
+  }
+</script>
+
+Example: by id
+
+<div id="out"></div>
+<script>
+  let d = document.getElementById("out");
+  d.innerHTML = "Hi! there :)";
+</script>
+
+Example: set event handler for all object belongs to 'help' css class 
+<p class='help'>Hi</p>
+<h2>Nothing</h2>
+<h3 class='help'>Hello</h3>
+
+<script>
+  let list = document.getElementsByClassName("help");
+  for(let i=0;i<list.length;i++) {
+     list.item(i).onclick = function() {
+       console.log("Hello....this is the handler for item " + i);
+     };
+  }
+</script>
+
+Example: Use querySelector and querySelectorAll because these two methods uses CSS style selector to select the HTML objects.
+
+<h1>One</h1>
+<h2 class="A">Two</h2>
+<h3 id="message">Three</h3>
+<h1>Four</h1>
+<p name="t">Hi</p>
+
+<script>
+  //let obj = document.querySelector("h1");  // by tagName
+  //let obj = document.querySelector(".A");    // by css class - dot . prefix 
+  //let obj = document.querySelector("#message");    // by id - # prefix
+  let obj = document.querySelector("p[name='t']");    // by name attribute
+
+  let list = document.querySelectorAll("h1");  // by tagName returns nodeList
+  console.log(list);
+  if(obj) {
+    console.dir(obj);
+    console.log( obj.innerHTML );
+  } else { 
+	  console.log("Not found");
+  }
+</script>
+
+Example: Populate the country dropdownlist
+
+<select id="country"></select>
+
+<script>
+  let countries = ["India","Nepal","UK"];
+  for(let i in countries) {
+    let op = document.createElement("option");
+    op.innerHTML = countries[i];
+    document.querySelector("#country").appendChild( op );
+  }
+</script>
+
+Example: Update previous example to handle event onchange
+
+<select id="country" onchange="doSelect()">
+  <option value="">Choose</option>
+</select>
+
+<script>
+  .....
+  ..... as per previous example....
+
+  function doSelect() {
+    console.log( document.querySelector("#country").value );
+   }
+</script>
+
+Example: Perform addition, multiplication, division, and subtraction of two numeric values -- handle "key events - onkeyup/onkeypress or onkeydown".
+
+<input type="number" id="no1" placeholder="Number" onkeyup="doCalc()" />
+<input type="number" id="no2" placeholder="Number" onkeyup="doCalc()" />
+<div id="output"></div>
+
+<script>
+  function doCalc() {
+     let no1 = parseFloat( document.querySelector("#no1").value ) || 0;
+     let no2 = parseFloat( document.querySelector("#no2").value ) || 0;
+
+     let output = document.querySelector("#output");
+     output.innerHTML = "";
+   
+     output.appendChild( document.createTextNode(no1+no2));
+     output.appendChild( document.createElement("br"));
+     output.appendChild( document.createTextNode(no1*no2));
+     output.appendChild( document.createElement("br"));
+     output.appendChild( document.createTextNode(no1/no2));
+     output.appendChild( document.createElement("br"));
+     output.appendChild( document.createTextNode(no1-no2));
+  }
+</script>
+ 
+Example:  Input city name and add it into the "dropdownlist" -- select object
+
+City: ____________ [ btnAdd ]
+
+|----------------|
+|               V|
+|----------------|
+
+<input type='text' id='city' /> 
+<button onclick='doAdd()'>Add</button>
+<select id='cityList'>
+  <option value=''>Choose</option>
+</select>
+
+<script>
+ function doAdd() {
+   let op = document.createElement('option');
+   op.innerHTML = document.querySelector('#city').value;
+   document.querySelector('#cityList').appendChild( op );
+ }
+</script>
+
+Example: Write code to populate '#stateList' when a '#countryList' is selected. We've following data:
+
+let data =
+  {
+    "India": ['Gujarat','Maha','Raj'],
+    "Nepal": ["Kathmandu","Bimpur"],
+    "Pakistan": ["Sindh", "Punjab"]
+  };
+
+Example:
+
+<select id='countryList' onchange='doPopulate()'>
+   <option value=''></option>
+ </select>
+ <select id='stateList'></select>
+
+ <script>
+  let data = {
+    "India": ['Gujarat','Maha','Raj'],
+    "Nepal": ["Kathmandu","Bimpur"],
+    "Pakistan": ["Sindh", "Punjab"],
+    "UK": ["London","England"]
+  };
+ 
+  // Populate the #countryList
+  for(let index in data) {
+    let op = document.createElement('option');
+    op.innerHTML = index;
+    document.querySelector('#countryList').appendChild( op );
+  }
+  function doPopulate() {
+    let country = document.querySelector('#countryList').value;
+    //Re-set the #stateList
+    document.querySelector('#stateList').innerHTML = '<option value="">Choose</option>'; 
+
+    //Populate the #stateList
+    for(let index in data[country]) {
+       let op = document.createElement('option');
+       op.innerHTML = data[country][index];
+       document.querySelector('#stateList').appendChild( op );
+     }
+  }
+</script>
+Example: We've some 'quotes' in an array. Write code to display a quote when user navigates by clicking on [Next] or [Previous] buttons.
+
+For instance,
+
+ "Where there is will there is a way!"
+
+      [Next] [Previous]
+
+<style>
+ blockquote {
+  box-shadow: 3px 3px 3px 3px #aaa;
+  padding: 10px;
+ }
+</style>
+
+<blockquote>
+  <q id='quote'></q>
+  <hr/>
+  <button onclick='doNav("Prev")'>Previous</button>
+  <button onclick='doNav("Next")'>Next</button>
+</blockquote>
+
+<script>
+  let quotes = [ 'Where there....','Someone .....',' Taste is .....' ];
+  let index = -1;
+  function doNav(cmd) {
+     if(cmd == 'Next') {
+       index++;
+     } else if(cmd == 'Prev') {
+       index--;
+     }
+     if(index<0) index = 0;
+     if(index>=quotes.length) index = quotes.length - 1;
+ 
+     document.querySelector('#quote').innerHTML = quotes[index];
+  }
+  //First time
+  doNav('Next');
+</script>
+
+Example:  We've some images in our app's root at 'images' folder.
+
+  e.g  /webapp/images/
+                 a1.jpg, a2.jpg .....
+
+
+Now, write a code to navigate images when user press [Next][Previous][First][Last] buttons.
+
+Hint:
+  let images = ['a1.jpg','a2.jpg',....];
+   
+and set 'src' property of <img src='images/a1.jpg' id='image' alt='Image' /> object.
+
+Example: Write code to switch the label of button from 'Show' to 'Hide' and vice versa (toggle)
+
+  e.g  [ Show ] and click will change the [ Hide ] label.
+
+Example: We've a toggle button which shows/hide the address when clicked
+
+ [Show Address]
+
+ [ Display address and other details]
+e.g
+
+  <button>Show Address</button>
+  <div>
+    <address>
+      ABc.. <br/>
+      Pqr.. <br/>
+    </address>
+  </div>
+
+Example: Input student name and add it to <ul> object
+e.g
+
+ Name: ____________ [Add]
+
+ * Reena
+ * Meena
+
+Example: Update previous example and add a [remove] hyperlink/button with each name you've added to the <li> of <ul>
+
+ * Reena  [x]
+ * Meena  [x]
+
+And remove the added name when [x] remove button/link is clicked.
+
+
+
+  
+
+  
+

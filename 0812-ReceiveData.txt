@@ -1,0 +1,84 @@
+Receive/read the data from client in servlet (or server program)
+================================================================
+The servlet container automatically parse the "request" (separate the instructions and body (data)) and expose them with the help of HttpServletRequest class's instance. So, to read the client data or request data, we have doGet or doPost method and we can use HttpServletRequest parameter's getParameter("key") method to read data in the form of string.
+
+There is another method of HttpServletRequest is 'getPart("key")', which returns the 'binary-data or file content from uploaded resources'.
+
+Example: Create "StudentServlet" (/student) and student.jsp
+
+1. StudentServlet's code:
+
+   public void doGet(.......) {
+      request.getRequestDispatcher("/student.jsp").forward(request,response);
+   }
+
+   public void doPost(.......) {
+      String roll = request.getParameter("roll");
+      String name = request.getParameter("name");
+      request.setAttribute("message", "Data received " + roll + "," + name );
+      request.getRequestDispatcher("/student.jsp").forward(request,response);
+   }
+
+2. student.jsp
+
+${message}
+<form method="post" action="student">
+  <input type="number" name="roll" placeholder="Roll" />
+  <input type="text" name="name" placeholder="Name" />
+  <button>Submit</button>
+</form>
+
+[Note: You can also receive the data in doGet using same code written inside the doPost except you can't use getPart() method in doGet]
+
+Example: Now add some more input elements. viz. radio button, checkbox, dropdown , listbox, textarea and receive the data in doPost of servlet.
+
+Example: Read data from client (input elements) and also populate (write) data to the attributes of input elements. ( This behaviour is known as sticky data/form)
+
+Update:
+1. in doPost method
+     ... 
+     ...
+     request.setAttribute("roll",roll);
+     request.setAttribute("name",name); 
+      request.setAttribute("message", "Data received " + roll + "," + name );
+      request.getRequestDispatcher("/student.jsp").forward(request,response);
+
+2. student.jsp
+
+....
+<input type="number" value="${roll}" name="roll" placeholder="Roll"/>
+<input type="number" value="${namel}" name="name" placeholder="Name"/>
+.....
+
+
+Example: How to handle button specific action? 
+You need to name the buttons and set unique value to each button. It is important to note that we can't two or more buttons at a time so use "common" name for buttons.
+e.g
+
+<button name="cmd" value="Add">Add Student</button>
+<button name="cmd" value="Update">Update Student</button>
+
+and recive the cmd value into servlet,
+  String cmd = request.getParameter("cmd");
+  if("Add".equals(cmd)) {
+    //TODO
+  }
+
+Example: Program to save address of your friends
+Name:
+Birth Date : 
+Country :  (dropdown)
+Gender : (.) Male (.) .......
+Hobbies: [x] Read books
+         [x] Play games
+         [ ] Watch movies
+[Add] [Delete] [Update] [Search]
+
+
+<select>
+  <option value="">Choose</option>
+  <c:forEach var="c" items="${countries}">
+    <option ${selectCountry == c ? "selected" : ""} >${c}</option>
+  </option>  
+</select> 
+ 

@@ -1,0 +1,140 @@
+Java EE Web API - Web Infrastructure
+================
+In order to develop web app using Java EE platform, we must have know-how of following essential APIs:
+  1. The Servlet
+  2. The View Engine APIs (It can be a Java Server Pages (JSP), or Java Server Faces (JSF) or 
+                           Velocity or one of the many open source view engines)
+     NOTE: The View Engine APIs are developed on the TOP-OF-THE-SERVLET. i.e They are the 
+           "forms" of Servlet
+
+  3. The Filter 
+  4. The Web API (Web Service API)
+  5. EL - Expression Language (Used by the View Engines)
+  6. Tag Libraries -- for instance Java Server Pages Standard Tag Library (JSTL) (Used by the
+                       View Engines)
+  7. Utilities like - Session, Cookies and listeners (event handlers)
+
+The "Servlet", "JSP View Engine" and "Filter" are available under "javax.servlet" and "javax.servlet.http" packages.
+
+Web App - Sample
+----------------
+1. Create a Dynamic Web Project" using Eclipse or Spring Tool
+2. There will be a "Project Explorer" view and it shows a folder named "WebContent" which will be     the "root" of your app and under it IDE will automatically persists "classes" , "lib" and    web.xml content.
+3. Inside the "WebContent" you may add public folders and files. 
+4. Mostally all web container uses "index.jsp" or "index.html" or "index.htm" as welcome or default page (or you can say 'Home' page). 
+5. A "Home" is a special page which will be forwwarded to the client when request is made to    "folder" resource.  
+   It is good practice to add "index.html" or "index.jsp" into each public folder to avoid the
+   content listing and 404 error page experience.
+
+/WebContent/
+           |
+           |------/images/   (store images here)
+           |------/js/  (save JavaScript programs)
+           |------/css/  (Save CSS resouces)
+           |
+           |------/admin/ (role/user specific program folder)
+           |------/student/ (role/user specific program folder)
+           |
+           | index.jsp/html
+           | login.jsp
+           | about, contact and many more public resouces
+           |
+           |------/META-INF/
+           |------/WEB-INF/   -- These two folders are managed implicitly by the IDE, We don't 
+                                 have to put classes or libraries into them manually. The IDE
+                                 will copy classes and lib automatically.
+                                
+                               -- However, if we want to protect the programs/pages then we
+				  can save them under /WEB-INF/your-folder.
+
+               NOTE: All servlets, filters, model and DAL/DAO must be placed into /WEB-INF/classes
+The Servlet
+===========
+
+ What is "Servlet"?
+
+    -> It is an extention of "Web/Http" server.
+    -> It is a class which receive the requests, process them and generate output and forward them
+       to "Web/Http server".
+       In other words, a servlet intercept the requests and generate responses accordingly.
+    -> The "Servlet" class/component is controlled or managed entirely by the "Application Server        or container". i.e. Servlet is loaded from disk to memory,
+                           Servlet is instantiated,
+                           Servlet's methods are served,
+                           Servlet is paused/stopped and
+                           Servlet is removed/out-of-service -- all these activities are performed
+	by the "container".
+
+
+ Have a look at 'how the servlet's life is maintained' by the container:
+
+        Client---> Request (instructions/data) ---> Http Server
+                                                    |
+                                                    V
+                                             Application Server
+                                                    |
+                                                    V
+                                                 1. Lookup/Search Servlet instance into 
+							"Servlet Stack/array".
+						 2. If a particualr servlet is not exists then
+						    load "that particualr" servlet, 
+						    instantiate it and place it into "Servlet
+						    Stack/Array" (Or Servlet Pool).
+                                                3.
+                                                    if a particular servlet is found in "Servlet
+							Pool" then obtain the instance, call
+							the "service method - doGet, doPost, 
+							doDelete, doDebug etc" 
+                                                4. Produced output/result will be appended into
+							an "OutputStream" and this "OutputStream"
+							will be passed to the "client" which
+							we know it as "response".
+                                                
+ How to create a servlet?
+ -------------------------
+ There are two ways to create servlets:
+   1. By extending the javax.servlet.http.HttpServlet class --- In order to create a servlet, you
+      class must be public and must have a named package.
+
+   2. By using "template engine or view engine". The "Template Engine" allow us to write mixed
+      code -- HTML, CSS, JavaScript, and Java Code in a very specially designed "Servlet" class.
+      In fact, the "Template Engine" will  generate "Servlet" class from the "view file".
+
+        For instance,  Java Server Pages Template/View Engine uses ".jsp" file extension and
+        we can write "mixed" code into .jsp page but the "jsp" page is transformed into "servlet"
+        before it is going to be processed.
+
+        So, when we create "pages" using "any template engine", there will be automatically
+        transformation of "page" into "servlet" class. ( page -> .java file -> compiled .class )
+
+        Template Engine automatically 'configure' the servlets whereas we must have to configure
+        sub-classes of 'javax.servlet.http.HttpServlet' manually -- by updating the web.xml or
+        adding an annotation.
+
+What will happend when "view page" is requested?
+
+ Client--> request the 'hello.jsp' ---> Http Server
+                                         |
+                                         V
+                                        App Server 
+                                         |
+                                         V
+                           1. Lookup into 'hello_jsp' servlet into Servlet Pool
+                           2. If not found then check the availability of 'hello_jsp.class' 
+                               and if it is not available then Template Engine will generate
+				.java (e.g. hello_jsp.java), compile it and produce 				'hello_jsp.class'.
+                               Instantiate the 'hello_jsp.class' servlet and add it into	
+				'Servlet Pool'.
+                               [Note: Step-2 will be repeated whenever changes are made in .jsp
+				file.]
+                           3.  Obtain the 'instance' and call its 'service method'.
+                           4.  Generate dynamic content of HTML,CSS,JavaScript and pass it in the
+				form of 'OutputStream' to the App-server and App-server will 
+				pass it to Http Server..
+
+ 
+      
+
+
+
+
+ 

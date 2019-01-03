@@ -1,0 +1,30 @@
+Table: User
+
+UserId (PK)
+Email  Unique
+Password
+Role Admin | Student | Tutor
+
+
+Table: Profile
+
+UserId (PK & Foreign Key(User) )
+FirstName
+LastName
+City
+Phone
+Photo
+Email
+
+
+Table: Program/course
+
+Id (PK)
+Name
+Desc
+Duration
+Avaialble
+Level
+Fees
+
+

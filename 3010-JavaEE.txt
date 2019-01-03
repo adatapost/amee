@@ -1,0 +1,116 @@
+Java EE (Enterprize Edition) Platform
+=====================================
+
+What is "platform"? It is IoC - Inversion of Control - a mechanism to design the "Platforms" and with the help of IoC or Platform we can develop, deploy and execute programs within the given "sandbox". (Sandbox is a kind of container which provide all kind of services to the program including compiling, loading, memory management, networking, database, and many more).
+
+IoC works on "Don't call us, we will call you" principle. In JavaSE, EE and Spring (and more) platforms, we will submit our code the IoC and the IoC will work on them accordingly. IoC is designed using "Interfaces" and "Annotations" and it is also known as "Dependency Injection". DI or Dependency Injection is just like a "Fill-in-the-blank" system which allows developers you "plug" their code to the IoC.
+
+What is JavaEE? 
+
+   -> It is a speficiation to develop, deploy and execute the enterprize or business applications.
+   -> JavaEE specification is maintained at "JCP - Java Community Process" by the Software        Industry companies and open source community.
+   -> Current JavaEE specification is JavaEE7.
+
+   -> JavaEE specification are then implemented by number of vendors or companies which provide
+      JavaEE compatible  or JavaEE container/software/tools and these are:
+          "Apache-Tomcat" is a JavaEE implementation from "Apache Foundation"
+          "Glass-fish"  from Oracle Inc
+          "WebLogic - Bea" from Oracle
+          "WebSphere" from IBM
+          "JBOss" from Red Hat and so on.
+
+What makes a "software/tool/api" as "JavaEE"?
+---------------------------------------------
+Basically, JavaEE must uses:
+  1. JavaSE - 1. Java Language  OR JVM Based Language - Kotlin, Scala etc
+              2. Java SE API + JavaSE Runtime
+
+  2. JavaEE - 1. Enterprize APIs 1. Web
+                                 2. EJB
+                                 3. Mail and many more
+              2. EE Runtime 
+  3. Application Server ( Implementation of JavaEE + Web Server )
+  4. Web Server
+
+So, in order to develop a Java EE app, we must have to install JavaSE + Java EE implementation from above mentioned vendor but here we will use open source and most commonly used "Apache-Tomcat" Java EE Application Server.
+
+As per Java EE speficiation, there should be following types of Java EE containers:
+   1. Web Container  - To develop, deploy (host) and execute web apps
+   2. EJB Container - To develop, deploy and execute enterprize apps.
+   3. Application Client Container - To develop, deploy and execute "client apps".
+NOTE: EJB Apps are kind of "service" apps which will be running backgroundly and remotely and these apps have "web app", "mobile" or "standalone" or another "EJB app" as clients.
+   
+What is "Web Server" OR "HTTP Server"?
+---------------------------------------
+ 
+ The main job of "Web/HTTP" server is to listen clients (Browser or Mobile or dekstop). Receive the "resource requests" and if requested resource is "static resource" ( whose content cannot be as well as output cannot be changed during program exeuction") then it develier the requested resource if it is exists, returns "404" - not found resource to client otherwise.
+
+If a requested resource is dyanmic (program) then web-server pass or forward this resource to "Application Server --- Java EE container", the app server then compile/run/process the requested resource and returns output to "web-server" and web-server will forward to "clients".
+
+[Note: Web Server can't execute programs instead it manages the "resources"]
+
+"Apache" is a web-server whereas "Tomcat" is an alias of "JavaEE" and it has two types of containers: 1. Web and 2. EJB
+
+So, we will also refer the App Server to "Container".
+
+The Web Container
+-----------------
+A "Web-Container" can host web-apps. 
+
+Each "hosted" app has unique app-name which is the name of the root folder of Java EE Web Application. This unique app-name is known as "context" or "application context". So there will be one or more "contexts". If you've installed five apps then there will be five contexts.
+
+Each "context" is "started,stopped/paused, out-of-service, or removed" by the "container" and any program added into the "context" will be "managed or controlled" by the services of "container".
+
+However, we, the developers, can instruct the container by setting some parameters to "web.xml" context configuration file. The web.xml is known as "Deployment Descriptor File". In fact there is a root "web.xml" file in a "container" and this root web.xml will be inherited by the "contexts".
+That means when you create an app (or context) then your app (context) derived all settings/configurations from root web.xml.
+
+Java EE Web App Directory Structure
+-----------------------------------
+IMPORTAT - Java EE Web App, all resouces names are case-sensitive so use appropriate naming conventions to name the static and dynamic resouces.
+
+It is good practice to use lower-case names for static resources.
+If possible, use - hyphen instead of underscore to name the static resources. 
+       e.g  my-app.html   
+            sample-video-bhajan.mp4
+
+Avoid whitespaces in naming.
+
+Use lower-case names for ".jsp" or other "view engine" files.
+
+/your-context/
+              |
+              |----------/META-INF
+              |              (resource manifest - internal to app server)
+              |----------/WEB-INF/
+              |                  |
+              |                  |-------/classes/
+              |                  |        (Any type you want to use in your app must be created
+              |                  |         in this folder). Use appropriate package names.
+              |                  |-------/lib/   
+              |                  |         (Any lib you want to use in app must be copied into
+              |                  |           this folder).
+              |                  |
+              |                  |--/user-defined/folders.....
+              |         Note: META-INF and WEB-INF are two folders are restricted by the 
+              |                container so nobody (or program) can access the content of 
+              |                these folders. Only container, context and programs inside the 
+              |                app/context can have permission to use them. 
+              |                  | web.xml
+              |               l     - An application configuration or Deplyment Descriptor file.To
+              |                 update default settings or to add new settings.
+              |
+              |---/public folders/
+              | and public 
+              | resources (static and dyanmic)
+
+
+
+
+
+
+
+
+
+
+
+

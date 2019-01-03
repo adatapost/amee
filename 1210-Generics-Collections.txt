@@ -1,0 +1,531 @@
+Generics Types or Parameterized Types
+=====================================
+
+This is a Java Language's feature to pass "TYPES" to another "TYPE" just like a method parameter to "re-use" the entire class, interface or enum (TYPE) code for one or more (different-different) TYPES.
+
+Imagine that we want a String's Stack class:
+class StringStack {
+  private String []items; 
+  public void push(String item) { }
+  public String pop()  { }
+}
+
+And for Integer's Stack:
+class IntStack {
+  private int []items;
+  public void push(int item) { } 
+  public int pop() { }
+}
+and for many more type's stack, we need to create a copy and then replace appropriate type for field, method parameters and return type of methods. So there will be different different "Stack" classes.
+
+If we use "Generics" syntax then our stack class would be like:
+public class Stack<T> {
+  private abc []items;
+  public void push(T item) { }
+  public T pop() { }
+}
+and we can "reuse" Generics Stack" for different-different types:
+  Stack<String> s1 = new Stack<>();
+  Stack<Student> s2 = new Stack<>();
+  Stack<int[]> s3 = new Stack<>();
+  Stack<Object> s4 = new Stack<>()... and they are thousands of possibilities to re-use the very same "class" for number of times.
+
+ < > is called Diamond operator and inside the "diamond" operator we can pass one or more TYPES -- type parameters. 
+
+ It is good practice to use UPPER ALPHABET to name the type parameter. However you can use any naming style.
+
+ The Type parameter "must be" a sub-class of "java.lang.Object". It means "Generics"
+ cannot take "primitive" parameters.
+     Stack<int> p<---- This is worng
+     Stack<int[]> p<--- This is valid because Java's Arrays are instance of 			java.lang.Object class.
+
+ If "Generics" type is used without "Type" parameter then the Java language automatically place java.lang.Object type parameter.
+   e.g  Stack s = new Stack();  --- Type parameter is java.lang.Object
+
+Example:
+
+package com.amee;
+
+public class Data<T> {
+  private T value;
+  public Data() { }
+  public Data(T value) { 
+    this.value = value;
+  }
+  public void setValue(T value) { this.value = value; }
+  public T getValue() { return value; }
+}
+
+NOTE: We can't pass primitives so use Wrappers - Integer, Short, Boolean, Character, Float, Double, Long , Byte classes.
+
+package com.amee;
+
+public class App {
+  public static void main(String []args) {
+     Data<Integer> d1 = new Data<>();
+     Data<String> d2 = new Data<>();
+     Data<Double> d3 = new Data<>(20.23);
+     d1.setValue( 10 );
+     d2.setValue("Hello!");
+     System.out.println(d1.getValue() + " " + d2.getValue() + " " + d3.getValue());
+  }
+}
+
+Example: Represent the data in key-value pair
+
+public class Pair<K,V> {
+  private K key;
+  private V value;
+  //TODO
+}
+
+code in main method:
+
+  //Student roll-name
+  Pair<Integer, String> std = new Pair<>();
+  std.setValue("Reena");
+  std.setKey(10);
+  //Cityname-pin
+  Pair<String,  Integer> city = new Pair<>();
+  city.setKey("Meh");
+  city.setValue(384001);
+  //Country-states
+  Pair<String, String[]> country = new Country<>();
+  country.setKey("India");
+  country.setValue( new String[] { "Guj","Raj, "Mah" } );
+  System.out.println( country.getKey());
+  for(String state : country.getValue())   // Collection  Iterator loop or for  in 
+    System.out.println( state );
+
+  
+
+The for in or (enhanced for) loop works with any object of a class which implements the java.lang.Iterable<T> interface and arrays. 
+
+The collection framework - Data structure  classes from java.util package
+==========================================================================
+In Java SE specification, a class which implements java.lang.Iterable<T> is a member of Java's Collection Foundation framework.
+
+Further, there are some more interfaces which define  the different different behaviors and these are:
+
+java.util.Collection<T> interface is sub-interface of Iterable<T>
+java.util.List<T> interface is a sub-interface of Collection<T>. The List<T> describe the list behavior where implementations of the List<T> are ArrayList<T>, a dynamic array like class, LinkedList<T>, Stack<T>, Queue<T>, Vector<T> and many more.
+
+The java.util.Set<T> interface is also a sub-interface of Collection<T> where implementation of Set<T> are HashSet, TreeSet classes. Set<T> allows collection of unique objects.
+
+The java.util.Map<K,V> interface uses Set<K> as K-Key  and Collection<V> as valueand its implemetations are Hashtable<K,V>, HashMap<K,V>, Properties and many more.
+
+[NOTE: In order to search, sort, delete objects or collections, the Type Parameters must overrride the equals, hashCode methods.]
+
+The collections are mainly used to:
+  1. Create a set of objects
+  2. Filter the  objects
+  3. SEarch or remove the objects
+  4. Sortthe objects
+
+The java.util.List<T> interface and its implementations
+========================================================
+We will uses java.util.ArrayList<T>, java.util.LinkedList<T> classes to represent elements in a given order. The elements might be duplicate but they have a specific order.
+
+[Note: In Old (JavaSE1.1 - before the Java's collection framework which was introduced in JavaSE) JavaSE, a class called java.util.Vector used to represent the collection of
+object  but later it was changed and included into  the  Collection framework but it still has some old/lagecy methods so avoid the use of lagecy classes. Also avoid the use of java.util.Hashtable<K,V>,is also a lagecy class.]
+
+Example:
+ List<String> cities = new ArrayList<>(); 
+//OR 
+// ArrayList<String> cities = new ArrayList<>();
+
+ //add some cities
+ cities.add( "Meh" );
+ cities.add( "Pat" );
+ cities.add( 0, "Sur" );  // Insert at 0 index
+ //Traverse
+ for(String city : cities)
+    System.out.println( city );
+
+ System.out.println( cities.size() );  // count of elements
+ System.out.println( cities.get(0) );  // return first element
+ cities.set(0,"Surat");                // Update the first element
+
+ cities.add( "Jam" );
+ cities.remove(0);    // remove the 1st element
+ cities.remove("Pat"); // Search and remove if exists
+
+ for(String city : cities) 
+   System.out.println(city);  
+
+
+Example: java.util.Arrays.sort method and java.util.Comparator<T> interface's int compare(T o1, T o2) - This method must return 0 if both the object or keys are same, returns >0 if o1's key greater tha o2's key else returns <0.
+
+package com.amee;
+class Student {
+  private int roll;
+  private String name;
+  public Student() { }
+  public Student(int roll, String name) { this.roll = roll; this.name = name; }
+  public int getRoll() { return roll; }
+  public String  getName() { return name; }
+}
+class App {
+  public static void main(String []args) {
+     int []nos = { 44, 32,5, 7, 8, 2, 3,5 ,6 };
+     String []names = { "Zarin", "Amar", "Murtza", "Asha" };
+     Student []students = { new Student(11,"Reena"),
+       new Student(3,"Pavan"), new Student(4,"Asha"),
+       new Student(44,"Babu") 
+     };
+     java.util.Arrays.sort( nos );
+     java.util.Arrays.sort( names );
+     for(int n : nos) System.out.println(n);
+     for(String name : names) System.out.println(name);
+
+      // Sort by roll
+     java.util.Arrays.sort( students, 
+        (p,q)->p.getRoll() - q.getRoll() );  // Custom sort
+     for(Student student : students ) 
+       System.out.println(student.getRoll() + " " + student.getName());
+
+     //Sort by  roll but in desc  order using named class
+     java.util.Arrays.sort( students, new MyCompare());
+     for(Student student : students ) 
+       System.out.println(student.getRoll() + " " + student.getName());
+
+
+     //Sortby name
+     java.util.Arrays.sort( students, (p,q)-> p.getName().compareTo(q.getName()) );
+     for(Student student : students ) 
+       System.out.println(student.getRoll() + " " + student.getName());
+
+  }
+}
+
+class MyCompare implements java.util.Comparator<Student> {
+   @Override
+   public int compare(Student a, Student b) {
+       return b.getRoll()-a.getRoll();
+   }
+}
+
+Example: Search and sort methods of the ArrayList<T>
+
+package com.amee;
+
+import java.util.ArrayList;
+
+class Student {
+  private int roll;
+  private String name;
+  public Student() { }
+  public Student(int roll, String name) { this.roll = roll; this.name = name; }
+  public Student(int roll) { this.roll = roll; }
+  public int getRoll() { return roll; }
+  public String  getName() { return name; }
+  @Override public String toString() { return roll + " " + name; }
+  @Override public int hashCode() { return roll; }
+  @Override public boolean equals(Object obj) { return obj.hashCode() == hashCode(); }
+
+}
+class App {
+  public static void main(String []args) {
+     ArrayList<Student> students =  new ArrayList<>();
+     students.add( new Student(11,"Zinal") );
+     students.add( new Student(10,"Amar") );
+     students.add( new Student(1,"Meenal") ); 
+    
+     for(Student student : students)       
+       System.out.println( student );
+
+     Student search = new Student(10);
+     if( students.contains(search))
+          System.out.println("Found!");
+     else 
+          System.out.println("Not found!");
+    
+     System.out.println( students.indexOf( search ) );
+
+      System.out.println("Sort by name ...");
+      students.sort( (p,q)->p.getName().compareTo(q.getName()) );
+    
+     for(Student student : students)       
+       System.out.println( student );
+     System.out.println("Sort by roll ...");
+      students.sort( (p,q)->p.getRoll()-q.getRoll() );
+    
+     for(Student student : students)       
+       System.out.println( student );
+  }
+}
+
+Example: Extends the ArrayList<T> to customize it.
+
+public class Students extends ArrayList<Student> {
+   public  void add(int  roll, String name) {
+      add(new Student(roll,name) ); 
+   }
+   public Student searchByRoll(int roll) {
+      return contains( new Student(roll) );
+   }
+   public void removeById( int roll ) {
+      remove( new Student(roll) );
+   }
+   public void sortByRoll() {
+      sort( (p,q)->p.getRoll() - q.getRoll());
+   }
+   public void sortByName() {
+      sort(p,q->p.getName().compareTo(q.getName()));
+   }
+}
+code in main:
+   Students students = new Students();
+   students.add( new Student(1,"Hiral") );
+   students.add( 2, "Hema" );
+   students.add( 5, "Amar");
+   for(Student student : students)
+     Ssytem.out.println(student);
+
+Example: Design a question bank app which is a collection of single and multiple choice questions (A questions has three options).
+
+public abstract class Question {
+  private String text;
+  private String op1,op2,op3;
+  public Question(String text, String op1, String op2, String op3) {
+    this.text = text;
+    this.op1 = op1;
+    this.op2 = op2;
+    this.op3 = op3;
+  }
+  //TODO
+  public void display() {
+    System.out.println(text);
+    System.out.println("1. " + op1);
+    System.out.println("2. " + op2);
+    System.out.println("3. " + op3);
+  }
+  public abstract  boolean isCorrect();
+}
+
+public class Single extends Question {
+   private int correct, userChoice;
+   //Getter-Setters
+  public Single(String text, String op1, String op2, String op3, int correct) {
+   super(text,op1,op2,op3);
+   this.correct =  correct;
+  }
+   @Override
+   public void display() {
+     super.display();
+     System.out.println("Enter choice : 1, 2 , 3 : ");
+     userChoice = new Scanner(System.in).nextInt();
+   }
+   OVerrirde public boolean isCorrect() { return correct = userChoice; }
+}
+
+public class Multiple extends Question {
+   private int []correct, userChoice;
+   //Getter-Setters
+   @Override
+   public void display() {
+     super.display();
+     System.out.println("Enter first choice 1 forcorrect 0 for incorrect ");
+     userChoice[0] = new Scanner(System.in).nextInt();
+     System.out.println("Enter second choice 1 forcorrect 0 for incorrect ");
+     userChoice[1] = new Scanner(System.in).nextInt();
+     System.out.println("Enter third choice 1 forcorrect 0 for incorrect ");
+     userChoice[2] = new Scanner(System.in).nextInt();
+   }
+   OVerrirde public boolean isCorrect() { 
+      return correct[0] = userChoice[0]
+           && correct[1] == userChoice[1] 
+            && correct[2] == userChoice[2]; 
+   }
+}
+
+public class QuestionBank {
+   private static ArrayList<Question> questions = new ArrayList<>();
+
+   public static void add( Question q) {
+      questions.add( q ) ;
+   }
+   public static void display() {
+      for(Question q : questions) 
+        q.display();
+   }
+
+   public static void result() {
+      int c = 0;
+      for(Question q : questions)  {
+         System.out.println(q.getText() +  " " +   q.isCorrect() );
+         if(q.isCorrect())
+            c++;
+      }
+      System.out.println("Total questions : " + questions.size());
+      System.out.println("Correct : " + c);
+      System.out.println("InCorrect : " + questions.size() -  c);
+   }
+}   
+
+Code in main:
+
+   QuestionBank.add( new Single("What is OS?","Op Sys","On Sys","Oss",1) );
+   QuestionBank.add( new Multiple("What is OS?","Op Sys","On Sys","Oss",new int[] {0,1,1 }) );
+   QuestionBank.add( new Single("What is OS?","Op Sys","On Sys","Oss",1) );
+   QuestionBank.add( new Multiple("What is OS?","Op Sys","On Sys","Oss",new int[] {0,1,1 }) );
+
+   QuestionBank.display();
+   QuestionBank.result();
+
+Example: Add 'randomize()" method  in  QuestionBank which displays the questions in random order.
+
+Example: Write a program (Design the classes) to print the "Invoice (Bill)".
+
+The  Set<T> interface and implementations - HashSet, TreeSet
+=========================================
+This collection collects unique objects -- no duplicates. The duplication of objects is prevented by "hashCode" and "equals" method of parameterized type.
+
+It important to note that there will be no "order" ofan object is preserved with "Set<T>". If you want an object to be ordered then use "List<T>".
+
+code in main:
+
+HashSet<String> countries = new HashSet<>();
+countries.add( "India" );
+countries.add( "Nepal" );
+countries.add( "India" ); // Won't add
+
+//traverse
+for(String country : countries) 
+   System.out.println(country);
+
+//remove
+System.out.println( countries.remove("UK") );
+System.out.println( countries.remove("India") );
+
+//Search
+System.out.println( countries.contains("UK") );
+
+The  Map<K,V> interface and implementations   - HashMap, Hashtable
+============================================
+
+ A "K" stands to Key and  it  must be unique. i.e. it is a Set<K> whereas 
+ A "V" stands for value and it is a Collection<T>.
+
+Example:
+
+  //Represent country and country code
+
+  HashMap<Integer, String>  countries = new HashMap<>();
+
+  //add or replace a pair - key-value pair
+  countries.put(91, "India");
+  countries.put(1, "USA");
+  countries.put(2, "UK");
+  countries.put(2,"Canada");  // Replace the value "UK"
+
+  //Traverse only keys via keySet() methods
+  for(Integer key : countries.keySet())
+     System.out.println( key + "  :  " + countries.get(key));
+
+  //Traverse single entry 
+  System.out.println( countries.get(100) ); // null
+  System.out.println( countries.get(91) ); // India
+
+  //Traverse the values via values() method
+  for(STring value : countries.values())
+     System.out.println( value);
+
+  //Traverse the Map.Entry<K,V> pair by entrySet() method
+  for(Map.Entry<Integer,String> entry : countries.entrySet()) {
+     System.out.println( entry.getKey() + "  : " + entry.getValue());
+
+ //SEarch by key
+  System.out.println( countries.containsKey(91) );
+  
+ //SEarch by value
+  System.out.println( countries.containsValue( "UK" ) );
+
+ //Remove the entry
+  System.out.println( countries.remove( 20 ) ); 
+  System.out.println( countries.remove( 2 ) ); 
+  
+Example: Represent country wise states. 
+
+ HashMap<String, HashSet<String>> c1 = new HashMap<>();
+ c1.put("India", new HashSet<>());
+ c1.put("Nepal", new HashSet<>());
+ c1.get("India").add("Guj");
+
+Example: Country/state/cities
+ 
+ HashMap<String, HashMap<String,HashSet<String>>> c1 = new HashMap<>();
+
+Example: I've a "string". Write a code to count occurence of words.
+       e.g  the red sun and red rose
+
+          the occurs 2 times
+          red occurs 2 times
+          sun occurs 1 times.....
+
+Example: Write a program to produce "amount-in-words" of given amount (interger).
+
+The "Properties" class  - It is a specialized Map
+=======================
+Java platforms uses "Properties" class to persists the settings into .properties files. 
+[Note: It is not mandatory to use .properties file to save/serialize the key-value pairs of data].
+
+Example: Reading the JavaSE system's proeprties.
+
+package com.amee;
+
+import java.util.Properties;
+
+class App {
+  public static void main(String []args) {
+      Properties props = System.getProperties(); // Read the JavaSE's system settings
+      for(Object key : props.keySet()) {
+        System.out.println( key + " => "  + props.get(key));
+      }
+
+      //To read single property
+      System.out.println("\nUser's Directory : " + System.getProperty("user.dir"));
+  }
+}
+
+Example: Save/read your app's properties 
+
+ // Create the Properties object
+ Properties props = new Properties();
+ props.setProperty("dbname","mysql");
+ props.put("server","localhost");
+ props.put("user","root");
+ props.setProperty("app.name","The ABC Ltd Inventory");
+
+ //Save the properties
+ try(FileOutputStream fs = new FileOutputStream("app.properties")) {
+    props.store(fs,"My App Settings");
+ }catch(Exception ex) {
+    System.out.println(ex);
+ }
+
+ // Read the properties from app.properties
+ Properties props = new Properties();
+      
+ try(FileInputStream fs = new FileInputStream("app.properties")) {
+        props.load(fs);
+ }catch(Exception ex) {
+         System.out.println(ex);
+ }
+ if(props!=null) {
+    System.out.println( props.getProperty("dbname") );
+    System.out.println( props.getProperty("server") );
+ }
+
+
+
+
+
+
+
+
+
+
+
+ 
+

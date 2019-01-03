@@ -1,0 +1,64 @@
+JSON Parser (JavaScript Object Notation - JSON)
+------------------------------------------------
+
+This is an alternate data interchange format of "XML" and nowsday it is very popular for its simple syntax and lightweight APIs (As compare to XML). However JSON format is suitable for small data/document.
+
+JSON provide two syntax to represent and describe the data:
+
+  1. JSON Object
+
+      {
+        "key1": value1,
+        "key2": value2,
+         ....
+       }
+
+     "key" must be string whereas value can be : number, date, string, another JSON object,
+      boolean, another JSON array
+
+
+  2. JSON Array
+
+      [
+        { "key1": ... },
+        { "key1": ... }
+       ]
+
+ JavaSE don't have JSON api so we will use "open source from JSON.org".
+
+
+Use the JSON APIs
+=================
+Step-1 Download JSON-JAVA from json.org and create org.json package in your app and copy all .java files from downloaded zip file. We've to use JSONObject and JSONArray classes
+
+Step-2 code in main:  Java object to JSON object/string
+
+                Student std = new Student(10,"Rajesh","1st");
+		JSONObject obj = new JSONObject(std);
+
+		String jsonString = obj.toString();
+		System.out.println(jsonString);
+
+                //JSONObject property
+		
+		System.out.println(obj.getInt("roll"));
+		System.out.println(obj.getString("name"));
+		System.out.println(obj.getString("className"));
+
+Example: JSONString to JSONObject
+
+                String jsonStr = "{\"roll\": 10, \"name\": \"Jeena\", \"className\": \"3rd\"}";
+		JSONObject obj = new JSONObject(jsonStr);
+		System.out.println(obj.getInt("roll"));
+		System.out.println(obj.getString("name"));
+		System.out.println(obj.getString("className"));
+
+Example: Java List<T> to JSONArray
+
+List<Student> list = ....
+JSONArray array = new JSONArray(list);
+System.out.println(array.toString());
+for( int i=0;i<array.length();i++) {
+  JSONObject obj  = array.getJSONObject(i);
+  System.out.println(obj.getInt("roll") + " " + obj.getString("name"));
+}

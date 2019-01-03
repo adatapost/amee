@@ -1,0 +1,111 @@
+Access modifiers and package
+=============================
+Java languange support four access modifiers to control the visibility of "entities - class, interface, enum and their members".
+
+1. public - The "public" entities are visible everywhere -- there is no restrictions on
+            public entities.
+
+2.        - Unnamed or package-level private entities are only visible inside the
+	   package in which they are created. They are not visible outside the
+	   package.
+
+3. protected - Protected entities has similar access as "package-level-private" except
+		they can also visible in sub-classes of other package classes.
+
+4. private  - These entities are not visible outside the class in which they are 	      created/defined.
+
+IMPORTANT:
+  
+   1. TOP-LEVEL types either have "public" or "package-level-private" access. The
+      default is "package-level-private".
+e.g
+public class A { } <-- For "public" class, interface and enum the file name or 
+			compilation unit name must be  same as the class name.
+
+class B { }    <--- This has "package-level-private" access
+
+But,
+private class D { } <-- is not permitted
+protected class E { } <- is not permitted
+
+
+  2. For nested Types and members ,
+
+   Type		Default				Can be changed
+ 1. class	package-level-private		public, private, protected and
+						package-level-private
+	e.g
+	public class A {
+            int no;   <-- package-level-private
+            class G { } <--- package-level-private
+            private int m;
+            public class R { }
+            protected int k;
+        }
+ 2. interface	public				public
+ 3. enum	public				public, package-level-private, private
+					[Enum class can't support inheritance]
+
+
+Steps to create packages and use them
+========================================
+1. Create "Emp.java" in "c:\pqr" folder having com.one package
+
+package com.one;
+
+class Emp {
+   public Emp() {
+     System.out.println("Emp");
+   }
+}
+
+2. Create EmpTest.java in "c:\abc" folder having in.two package
+
+package in.two;
+public class EmpTest {
+  public static void main(String []args) {
+     com.one.Emp emp = new com.one.Emp();
+  }
+}
+OR
+package in.two;
+import com.one.Emp;
+public class EmpTest {
+  public static void main(String []args) {
+     Emp emp = new Emp();
+  }
+}
+
+c:\abc>javac -cp  .;c:\pqr   EmpTest.java -d .
+ 
+  -cp stands for CLASSPATH and it shows the location of .class files
+
+To run,lauch:
+
+  java -cp .;c:\pqr in.two.EmpTest
+
+We've to set -cp for both,  the compiler as well as JVM.
+NOTE: Netbeans, Eclipse and other Integrated Development Environment (IDE) also uses
+same switches on behalf of the developers.
+
+
+The JAR tool - Java Archieve Tool - Code Packing tool
+-------------------------------------------------------
+Now we can create a single library called "mylib.jar" which is a compressed (zip or rar) file that contains "class files".
+
+c:\pqr>jar -cvf mylib.jar com
+
+-c will create a archive
+-v will show the process output
+-f will specify the .jar file name
+and "com" is our root package name
+
+Now, copy the mylib.jar into c:\abc and run your code:
+
+c:\abc>java -cp .;mylib.jar in.two.EmpTest
+
+The .jar file can be distributed to one or more projects.
+
+The JavaEE's uses .war extension (Web Archive) and
+                  .ear extension for EJB (enterprise beans)
+The "Android" uses .apk extension.

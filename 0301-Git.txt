@@ -1,0 +1,55 @@
+The "GIT" protocol - source code control
+-----------------------------------------
+
+"GIT" is a source code control or source code version control protocol and we can find the implementations of "git" at local desktop app (git-scm tool from git-scm web site) or source-tree tool or web interfaces like github.com, bitbucket, Microsoft and many more commercial.
+
+Git is used by developers to keep track on their code, store different version of code safely and share the code (team )or merge the code. Non developer community like artist, musician, medical professional, teacher/education and many more uses this protocol to control their works (documents).
+
+"Git" tool help us to design the "repositories -- folders where we can save our works and git protocol allow us to keep history on changes by creating one or more branch" at local machine and also help us to synchronize the local repository with "remote repository".
+
+Repository created at local machine is called "local" repository whereas we can create remote repository using approriate web-interface/app e.g github.com, bitbucket etc 
+
+Basic concept of repository:
+
+  
+
+  (branches...)  -- There may be more than one branch and each branch hold the content (files
+      \   /         or directories) without affecting other branches.
+       \ /
+        |
+        |
+        | (root branch - master)
+ ---------------
+
+   As per "Git" protocol, each file or directory is represented as a "node" into Git repository   (bank) with the unique "hash". Each branch has its own set of "nodes" and later we can discard these nodes or merge these nodes with/to branches (parent or children).
+
+How to install "Git" tool and use the "Git" at local machine?
+------------------
+1. Download git-scm tool from git-scm.org 
+   [Note: Git protocol is introduced by Mr. Linus Torvalde , the creator of Linux OS.]
+2. Create a folder or enter into the existing folder whose content you want to control.
+
+  e.g  c:\amee>
+
+3. Issue "git init" command to initialize the current folder as "git repository". The ".git"    folder under your current folder is a git repository.   
+
+    c:\amee>git init
+
+    A "new" and "empty" git repository having default "root" branch called "master" is created.
+
+3. List the branches
+
+   c:\amee>git branch   or git branch -l 
+
+4. Add some files in it e.g we've "sample.txt"
+   Now, issue "git add sample.txt" command to create a node of "sample.txt" into "master" branch
+
+   c:\amee>git add sample.txt
+  
+   Now, issue 'git commit -m "Your message or comment"' command to commit the changes into the 	repo.
+
+   c:\amee>git commit -m "sample.txt file added"
+
+   Note: You can use wildcard to select files or folders. eg.  git add *.*
+								git add *.txt
+

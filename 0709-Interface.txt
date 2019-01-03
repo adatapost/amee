@@ -1,0 +1,439 @@
+The "interface" type
+====================
+
+-> It is a reference type.
+
+-> It is used to separate the declaration of method from the class. 
+
+-> The interface tells "What to do?" -- just like rules or guidelines and
+   classes implements the "interfaces" that describes "How to do?".
+
+-> There are many applications of "Interface" type and here they are :
+
+   1. Code separation - Separate method declaration from its definition so the users
+			of your class can easily persive or understand what 			functionality is with your class.
+
+   2. Method Reference - To represent memory reference of method using "Virtual Method
+			 Table" technique (In C/C++, it is called function pointer).
+
+     [Note: In C Language, we've one definition of function per declaration whereas
+            in OOP, we have one or more definitions of single declaration and that
+            is the reason we achieve the real "Polymorphism"]
+
+  3. Design the "libraries" 
+  4. Define the "Standards or Protocols"
+  5. Design Event handling and callback mechanism
+  6. Anonymous classes and lambda expressions -- also known as anonymous inner class
+	or closures.
+
+-> An interface can inherits one or more interfaces. In fact, a "interface" describes the "behavior" of type(s).
+ 
+
+Example:
+
+interface User {
+  void show();
+}
+
+interface Guest extends User {
+  void add();
+}
+
+interface Manager extends Guest {
+   void update();
+}
+
+interface Admin extends Manager {
+   void delete();
+}
+
+class MyApp implements Admin {
+  /* override all four methods here */
+  //TODO
+}
+
+Now, code in main method:
+
+   //Create instance of MyApp
+   MyApp app = new MyApp();
+  
+   //App to Guest
+   Guest g = app; // Guest has two methods / pointers and can access only two actions
+   g.show();
+   g.add();
+   //App to User
+   User u = app;  // Restricted to single action show()
+   u.show();
+   //App to admin
+   Admin ad = app;  // All four actions are available here
+   ad.show();
+   ad.update();
+   ad.delete();
+   ad.add();
+
+Define the anonymous class and create a closure
+================================================
+
+A closure is an object that includes an object along with "methods". In Java, we call it anonymous class and it is known as "closure" in JavaScript language.
+
+
+Syntax:
+
+  InterfaceType  refVar = new InterfaceType() {
+     // override methods from "InterfaceType
+  };
+
+
+Example:
+
+interface MyInterface {
+   void method1();
+}   
+
+class App {
+  public static void main(String []args) {
+     MyInterface m = new MyInterface() {
+        public void method1() {
+            System.out.println("Hello! This is a closure!");
+        }
+      };
+
+      // Invoke method
+      m.method1();
+    
+     //Here is an instance of "Named" class
+     One a = new One();
+     a.method1();
+  }
+}
+class One implements MyInterface {
+   public void method1() {
+     System.out.println("This is the named class method!");
+   }
+}
+
+Example: Create two threads (code in main)
+
+ Runnable run1 = new Runnable() {
+   public void run() {
+       System.out.println("A1");
+       System.out.println("A2");
+       System.out.println("A3");
+   }
+ };
+  //Create Thread objects
+ Thread th1 = new Thread(run1); 
+ Thread th2 = new Thread( new Runnable() { 
+    public void run() {
+      System.out.println("B1");
+      System.out.println("B2");
+      System.out.println("B3");
+ });
+ //Start the threads
+ th1.start();
+ th2.start();
+ new Thread( new Runnable() { 
+   public void run() {
+     System.out.println("P1");
+     System.out.println("P2");
+     System.out.println("P3");
+  }
+ }).start();
+ 
+   
+The "Lambda" expression - another syntax to create anonynous class and closure but in this syntax an interface "must" have one and only one "abstract/declared" method.
+
+Syntax:
+
+   InterfaceType refVar = (params...) -> single-statement;
+   InterfaceType refVar = (params...) -> {
+          // multiple-statements;   
+   };
+
+Example: Code in main ( Create some threads !!!");
+  
+  Runnable run1 = () -> System.out.println("Hello! Thread");
+  
+  //create threads
+  Thread th1 = new Thread( run1 );
+  Thread th2 = new Thread( ()-> System.out.println("This is another thread!") );
+  Thread th3 = new Thread( ()-> {
+     System.out.println("Third-1");
+     System.out.println("Third-2");
+  });
+
+  //start threads
+  th1.start();
+  th2.start();
+  th3.start();
+  new Thread( ()-> System.out.println("Hello World!") ).start();
+
+Example: Passing method references
+
+interface Calc {
+  double perform(double a, double b);
+}
+
+class App {
+  static void action(Calc calc) {
+     System.out.println( calc.perform(10,7) );
+  }
+  public static void main(String []args) { 
+     Calc add = (a,b)->a+b;   // perform(double,double)
+  
+     action(add); 
+     action( (p,q)->p*q );
+     action( (a,b)->a/b );
+     action( new Calc() {
+         public void perform(double p, double q) {
+            return p-q;
+         }
+     });
+  }//endmain
+}//endclass
+
+Example: Filter the array of Students
+
+interface Predicate {
+  boolean check(Student d);
+}
+
+code in main:
+
+   //Assume that we've 50 student objects
+   Students []students = .....;
+
+   print( (s)-> s.getName().startsWith("A") );
+   print( (s)-> s.getClassName().equals("1st") );
+   ....
+
+The print() method:
+    public static void print( Predicate condition ) {
+      for(Student s : students) {
+         if(condition(s))
+             System.out.println(s.getName() + " " + s.getClassName());
+      }
+    }
+ 
+The java.lang.AutoCloseable Interface -- An interface that define the "standard" behavior.
+=======================================================================
+This interface is implemented by number of classes under IO, SQL, Graphics-Drawing, Compression, NEtwork and many more APIs.
+
+Actually, above mentioned operations (eg. IO, Network, SQL etc) uses huge amount of memory or uses system resources and at the end of your program/work these resources must be freed gracefully. If these resources are not freed then your app might not function as expected.
+
+In Java, there is a standard method in above mentioned APIs called "close()" which must be called just before you finish.
+
+Try-with-resource syntax - It automatically invoke (no matter whether an exception is raised or not) the close() method of AutoCloseable component.
+
+Syntax of try-with-resource
+  try(AutoCloseableClass in = new  AutoCloseableClass()) {
+   //TODO
+  }catch(Exception ex) {
+    //TODO
+  }
+
+Example: Remove the "implements AutoCloseable" clause and comple+run and see what happen?
+
+package com.amee;
+
+class Foo implements AutoCloseable {
+  public void close() {
+    System.out.println("Bye....");
+  }
+}
+public class App {
+  public static void main(String []args) {
+     try(Foo foo = new Foo()) {
+       System.out.println("Done!");
+     }catch(Exception ex) {
+       System.out.println(ex);
+     }
+     System.out.println("End of program!");  
+  }
+}
+
+The java.io.Serializable interface - save the state of an object - a "standard" to serialize or deserialize the objects.
+-----------------------------------------------------------------------------------
+This is "markup" kind of interface (Interface don't have any declared method). It is just an instruction to the JVM that an object is serializable or not.
+
+We will use two classes of java.io package namely - java.io.ObjectOutputStream and java.io.ObjectInputStream and also java.io.FileOutputStream and java.io.FileInputStream as underlying streams.
+
+Example:
+
+package com.amee;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+class Foo implements java.io.Serializable {
+  int no; 
+  String name;
+}
+public class App {
+  public static void main(String []args) {
+    // serialize();
+    deserialize();
+  }
+
+  static void serialize() {
+    Foo foo = new Foo();
+    foo.no = 100;
+    foo.name = "Reena";
+    try( ObjectOutputStream out = 
+            new ObjectOutputStream( 
+                new FileOutputStream("p.txt") ) ) {
+      out.writeObject( foo );
+      System.out.println("Done!");
+    }catch(Exception ex) {
+      System.out.println(ex);
+    }
+  }
+
+  static void deserialize() {
+   
+    try( ObjectInputStream in = 
+            new ObjectInputStream( 
+                new FileInputStream("p.txt") ) ) {
+
+      Foo foo = (Foo) in.readObject();
+      System.out.println( foo.no + " " + foo.name );
+    }catch(Exception ex) {
+      System.out.println(ex);
+    }
+  }
+}
+
+Interface as "callback" (closure) or "Event handling"
+======================================================
+We want to design a "MyNumber" component where it has single "integer" instance field. We wish to add an event which will be raised whenever integer field is updated.
+
+interface UpdateListener {
+  void update(int oldValue, int newValue);
+}
+
+class NyNumber {
+   private int no;
+   private UpdateListener updateListener;
+   
+   public void setNo(int no) {
+     if(no!=this.no) {
+         if( updateListener != null ) {   // Raise or fire the event if there is ref
+             updateListener.update(this.no, no);
+         }
+         this.no = no;
+      }
+   }
+   public void setUpdateListener( UpdateListener updateListener ) { 
+     this.updateListener = updateListener;
+   }
+}
+
+class App {
+  public static void main(String []args) {
+     MyNumber myNum = new MyNumber();
+     myNum.setNo(3);
+     //Attach your code - event handler (method)
+     myNum.setUpdateListener( 
+            (o,n)-> System.out.println(o + " is replaced with " + n ); 
+    myNum.setNo(45); 
+    myNum.setUpdateListener( new MyHandler() );
+    myNum.setNo(56);
+    myNum.setUpdateListener( new UpdateListener() {
+      public void update(int oldV, int newV) {
+         ///
+      }
+    });
+  }
+}
+//Define a named event handler 
+class MyHandler implements UpdateListener {
+   public void update(int o, int n) {
+     System.out.println("Changed!!! Old value : " + o + " and new value : " + n);
+   }
+}
+
+In above example, we are trying to add a "placeholder" for the user's code. The user of the class "MyNumber" can attach his/her own version of code and that code will be executed when setNo() method update the "no" field.
+
+
+Example: We have a "Login" component has "login(username,password)" static method. Raise "success" event if given username/password are match, raise "failed" event otherwise.
+
+public interface LoginStatusListener {
+   void check(LoginStatus loginStatus, UserInfo userInfo);
+}
+public enum LoginStatus {
+  SUCCESS,
+  FAIL
+}
+
+package com.amee;
+
+public class UserInfo {
+   private String userName;
+   private String password;
+   public UserInfo() { }
+   public UserInfo(String userName, String password) {
+     this.userName = userName;
+     this.password = password;
+   }
+   public String getUserName() { return userName; }
+   public String getPassword() { return password; }
+}
+
+
+package com.amee;
+
+public class Login { 
+   private static LoginStatusListener loginStatusListener;
+
+   public static void setLoginStatusListener(
+          LoginStatusListener loginStatusListener) {
+     Login.loginStatusListener = loginStatusListener;
+   }
+
+   public static boolean login(UserInfo userInfo) {
+     LoginStatus loginStatus = LoginStatus.FAIL;
+     boolean status = false;
+     if("amee@gmail.com".equals(userInfo.getUserName())
+            && "a001".equals(userInfo.getPassword())) {
+         loginStatus = LoginStatus.SUCCESS; 
+         status = true;
+     }
+     if(Login.loginStatusListener != null ) {
+        //Invoke or raise the event
+        loginStatusListener.check( loginStatus, userInfo );
+     }
+     return status;
+   }
+}
+
+
+package com.amee;
+
+public class App {
+  public static void main(String []args) {
+      UserInfo user = new UserInfo("amee@gmail.com","a001");
+      Login.setLoginStatusListener( (s,u)-> {
+         if(s == LoginStatus.SUCCESS) {
+            //Welcome user
+            System.out.println("Welcome user : " + u.getUserName());
+         } else {
+            System.out.println("Invalid username or password!!!" + u.getUserName());
+         }
+      });
+      Login.login(user);
+
+      Login.login(new UserInfo("aa@aa.com","11212"));
+  }
+  public static void main1(String []args) {
+      UserInfo user = new UserInfo("amee@gmail.com","a001");
+      if( Login.login( user ) ) {
+         System.out.println("Success!!! " );
+      } else {
+         System.out.println("Failed!");
+      }
+  }
+}
+ 
+ 

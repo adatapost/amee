@@ -1,0 +1,299 @@
+Java API for XML Processing - JAXP
+==================================
+
+What is "XML"?
+
+ XML (eXtensible Markup Language) is not a markup language (the name is itself a misnomer) but it is language to create new markup languages. In other words, XML define the "standards" and with the help of "standards" we can "describe the data" or describe the "nature of data".
+
+XML is also known as "Data Interchange/Exchange" format because of its "standard".
+
+Here are some special rules that define the regular document as "XML" standard document.
+
+1. User can define their own "Elements" as per standard naming conventions.
+2. XML Elements are case-sensitive
+3. XML Elements are strictly nested
+4. There must be one and only one "root" element.
+5. Attribute value must be enclosed with single or double quotes.
+6. XML document can be a "static" file (generally people uses .xml extension) or it could be    generated via program execution.
+7. Standard Programming Interfaces (APIs) are avaialble to process the (read, write, update) XML 
+   documents programatically and they are:
+       1. DOM - Document Object Model and
+       2. SAX - Simple API for XML
+8. Whitespaces are consider as characters ( Whitespace is known as "Character" Element). (In HTML
+   whitespaces are ignored)
+
+Here is an example of "student markup language -- A markup describes student data"
+
+<?xml version="1.0"?>   <---- This is called "Preprocessor instruction" and it is for DOM or SAX
+                              XML APIs.
+
+<students>
+  <student className="1st">
+    <roll>10</roll>
+    <name>Mr.A</name>
+   </student>
+  <student className='2nd'>
+    <roll>20</roll>
+    <name/> <--- Empty
+  </student
+</students>
+
+ 
+9. Tags are formed using < and > sign. XML support "XML or HTML Entities" --  subset of special characters which confuse the XML document structure.
+  for example,
+       <c>
+         <sample>
+            #include<stdio.h>  <---- <stdio.h>, less and greater than chars confuse the APIs
+         </sample>
+       </c>
+   So &lt; and &gt; entites must be used while writing the data:
+        ...
+         <sample>
+            #include &lt;stdio.h&gt;
+         </sample>
+
+NOTE: APIs used to read/write XML data/documents are known as XML PARSERS or XML Engines.
+
+    : Apart from the XML, there is another "data interchange format" commonly used by the
+      developers and it is "JSON - JavaScript Object Notation".
+
+    : In software development, XML and JSON data interchange formats are used for different
+      different purposes --- to save setting or config data, to represent data with flexible
+      form (Data can be read/write by any program of any programming language) and to define
+      the "standard" (MathML is to express mathemtical expressions, SVG for graphics/painting etc       and so on).
+
+The DOM Parser
+==============
+
+In Java SE, we've two packages that represent the DOM parsers:
+  1. org.w3c.dom - is the collection of interfaces and 
+  2. javax.xml.parsers -- it is the lib where DOM and SAX (org.xml.sax) interfaces are       implemented.
+
+The DOM parsers reads all XML Tags at once of a given document/data and create an object for each tag, arrange or adjust each object into a "tree" just like a brances in a "tree".
+
+The Node, Document, Attr, Element interfaces
+====================================
+
+Generally all objects in DOM are "Node". Node is the root interface and further it is extends by Attr, Document, Element, CharacterData etc.
+
+The second most important interface is "Document" which reference the entire XML Data/document as well as it has methods to create/define new Objects (DOMs).
+
+The "Element" is also a "Node" with some simple ready to use methods.
+
+The "TextNode" is the object which represent anything other than <tag> or element.
+
+There is an interface called "NodeList" which is a collection of "nodes/elements".
+
+Example: Create XML Data document programatically. Import javax.xml.parsers, javax.xml.transform
+and org.w3c.dom packages
+
+public class Main {
+	public static void main(String[] args) {
+	
+		try {
+			// 1. Initialize the DOM parser
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			
+			//2. Create the Document object
+			Document document = builder.newDocument();
+			
+			//3. Define/create elements and add them into document-tree
+			Element students = document.createElement("students");
+			
+			Element student = document.createElement("student");
+			student.setAttribute("clasName", "1st");
+			Element roll = document.createElement("roll");
+			Element name  = document.createElement("name");
+			
+			roll.appendChild( document.createTextNode("10"));
+			name.appendChild( document.createTextNode("Reena"));
+			
+			student.appendChild( roll );
+			student.appendChild( name );
+			
+			students.appendChild( student );
+			students.appendChild( create(document,"2nd","20","Meena"));
+			
+			document.appendChild(students);
+			
+			
+			//3.  Transform the Document-tree to stream
+			
+			TransformerFactory transFact = TransformerFactory.newInstance();
+			Transformer trans = transFact.newTransformer();
+			
+			DOMSource source = new DOMSource(document);
+			StreamResult result = new StreamResult("c:/javaprg/amee/std.xml");
+			
+			//Optional to indent the XML data
+			trans.setOutputProperty(OutputKeys.INDENT,"Yes");
+			
+			//Transform the DOM to Stream
+			trans.transform(source, result);
+			
+		} catch(Exception ex) {
+			System.out.println(ex);
+		}
+
+	}
+	
+	public static Element create(Document document,
+			String mClassName, String mRoll,
+			String mName) throws Exception {
+		Element student = document.createElement("student");
+		student.setAttribute("clasName", mClassName);
+		Element roll = document.createElement("roll");
+		Element name  = document.createElement("name");
+		
+		roll.appendChild( document.createTextNode(mRoll));
+		name.appendChild( document.createTextNode(mName));
+		
+		student.appendChild( roll );
+		student.appendChild( name );
+		return student;
+	}
+
+}//EndClass
+
+
+Example: Read the XML Data/document (Parse the XML data)
+
+		try {
+			// 1. Initialize the DOM parser
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			
+			//2. Parse the XML document file/data
+			Document document = builder.parse("c:/javaprg/amee/std.xml");
+			
+			//3. Read the DOM 
+                        // Obtain the root element object
+			Element root = document.getDocumentElement(); 
+			
+			for(int i=0;i<root.getChildNodes().getLength();i++) {
+				Node node = root.getChildNodes().item(i);
+				//System.out.println(node.getNodeType());
+				if(Node.ELEMENT_NODE == node.getNodeType()) {
+					Element student = (Element) node;	
+					System.out.println(student.getAttribute("clasName"));
+					for(int j=0;j<student.getChildNodes().getLength();j++) {
+						node = student.getChildNodes().item(j);
+						if(node.ELEMENT_NODE == node.getNodeType()) {
+							Element e1 = (Element) node;
+							System.out.println(e1.getTextContent());
+						}
+					}
+				}
+			}
+				
+		} catch(Exception ex) {
+			System.out.println(ex);
+		}
+
+Example: Populate List<Student> from the previous sample code
+....
+List<Student> list = new ArrayList<>();
+....
+for(int i=0;....) {
+ ...				
+  if(Node.ELEMENT_NODE == node.getNodeType()) {
+   ...
+   Student std = new Student();
+   std.setClassName(student.getAttribute("clasName"));
+			
+   for(int j=0;.....) {
+      ...
+      Element e1 = (Element) node;
+      if( "roll".equals(e1.getNodeName()))
+	std.setRoll(Integer.parseInt(e1.getTextContent()));
+      if( "name".equals(e1.getNodeName()))
+	std.setName( e1.getTextContent());
+       ...
+   }
+  list.add(std);
+ }
+}
+
+Example: Read the nodes (NodeList) by the tagName.
+
+//3. Read elements by tag name
+ NodeList nodeList = document.getElementsByTagName("roll");
+ for(int i=0;i<nodeList.getLength();i++) {
+   Element roll = (Element) nodeList.item(i);
+   System.out.println(roll.getTextContent());
+   System.out.println(roll.getNextSibling().getTextContent());
+   System.out.println( ((Element)roll.getParentNode()).getAttribute("clasName"));
+ }
+
+Example: Delete/update the node and write back the dom-tree
+....
+NodeList nodeList = document.getElementsByTagName("roll");
+String searchRoll = "20";
+for(int i=0;i<nodeList.getLength();i++) {
+  Element roll = (Element) nodeList.item(i);
+  if(searchRoll.equals(roll.getTextContent())) {
+   //Delete the entire record (parent)
+   document.getDocumentElement().removeChild( roll.getParentNode() );
+   break;
+  }
+}
+//4. Transform the DOM to Stream
+........
+
+
+SAX Parser
+------------
+It is used to read/parse the large XML data/document because it reads them serially/sequentially whereas DOM load entire document-tree into memory before we can proceed. So large XML data with DOM will degrade the performance (Large means data more than 20, 50, 100 MG or GB...)
+
+SAX uses "callback" or "event-handler" mechanism where the SAX parser raises documentStart, documentEnd, tag open, tag close, character data and many more events.
+
+Example: Parse the "std.xml"
+
+Step-1 Create a sub-class of "DefaultHandler" class and override startElement, endElement and characters events:
+
+
+public class MyStudentHandler extends org.xml.sax.helpers.DefaultHandler {
+	
+	private List<Student> students = new ArrayList<>();
+	String data = null;
+	Student student;
+
+	@Override
+	public void characters(char[] array, int start, int length) throws SAXException {
+		data = new String(array,start,length);
+	}
+    @Override
+	public void endElement(String uri, String localName, String qName) throws SAXException {
+        if("roll".equals(qName))
+        	student.setRoll(Integer.parseInt(data));
+        if("name".equals(qName))
+        	student.setName(data);
+        if("student".equals(qName)) {
+        	//Write code to filter the data
+        	students.add(student);
+        }
+	}
+	@Override
+	public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
+       if("student".equals(qName)) {
+    	   student = new Student();
+    	   student.setClassName( attrs.getValue("clasName"));
+       }
+	}
+   public List<Student> getStudents() { return students; }
+}
+
+Step-2 Initialize the SAX parser and parse the data (code in main method)
+
+SAXParserFactory factory = SAXParserFactory.newInstance();
+SAXParser parser= factory.newSAXParser();
+			
+MyStudentHandler handler = new MyStudentHandler();
+parser.parse("c:/javaprg/amee/std.xml", handler);
+			
+for(Student student : handler.getStudents())
+  System.out.println(student.getRoll() + " " 
+              + student.getName() + " " + student.getClassName());
+
+				

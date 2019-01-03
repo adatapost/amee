@@ -1,0 +1,180 @@
+The DateTime APIs in Java SE 8 and later
+============================
+
+We've old Java API's for Date & Time under java.util package and the classes are :
+  1. java.util.Date  
+  2. java.util.Calendar
+and to format or parse the date object, java.text.SimpleDateFormat class is used.
+
+There is a new datetime API in "java.time" package introduced with Java SE 8. Most apps uses "New" API but some of the older API still uses "Date" and "Calendar" classes.
+
+[Note: There a sub class of java.util.Date in "java.sql" package named "java.sql.Date"]
+
+Example: To obtain local datetime without timezone info
+      java.util.Date now = new java.util.Date();  
+      System.out.println( now );
+
+Example: To obtain millis (date & time in millis) of current local date & time
+      long millis = System.currentTimeMillis();
+      System.out.println( millis );
+  OR
+      java.util.Date now = new java.util.Date();
+      long millis = now.getTime();
+      System.out.println(millis);
+
+Example: To obtain date from the given miliis (1000 millis  = 1 second)
+       The Java SE uses 1st Jan 1970 12:00:00 GMT as epoch time (start time) so,
+
+         java.util.Date dt = new java.util.Date(0);   // Value 0 is milliseconds
+         System.out.println("Epoch time : " + dt);
+
+Exmaple: To format the Date object 
+
+        We will use java.text.SimpleDateFormat class.
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy hh:mm:ss a");
+        String str = sdf.format( new java.util.Date() );
+        System.out.println( str );
+
+Example: To parse the string date (String to Date)
+
+    String str = "31-10-2003";
+    //define the pattern using
+    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
+
+    try {
+      Date dt = sdf.parse( str );
+      System.out.println(dt);
+    }catch(Exception ex) {
+      System.out.println("PAttern and date string not match!!!" + ex);
+    }
+
+ E - Day name abrr
+ MMM - Month name abbr. (See Document of SimpleDateFormat class)
+
+Design a Utility class that parse or format the number, strings and Dates
+
+public class Util {
+
+   public static Date toDate( String str, String pattern ) {
+      try {
+         return new SimpleDateFormat(pattern).parse(str);
+      }catch(Exception ex) { }
+     return null;
+   }
+
+  public static Integer toInt(String str) { 
+     try { return Integer.parseInt(str); } catch(Exception ex) { } 
+     return 0;
+  }
+  
+  public static String toIndiaDate(Date dt) {
+    return new SimpleDateFormat("dd-MM-yyyy").format(dt);
+  }
+  public static String toIndiaDateTime(Date dt) {
+    return new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format(dt);
+  }
+  
+ // And some more methods for double, float etc
+ 
+}
+
+Example: Create a UserInfo beans that contains, email, password, role, date created (account creation datetime), last visited (last visit date time).
+
+Primitive to String
+=====================
+Use "String.valueOf( data )" method  to format the primitives.
+
+
+Wrappers of primitive to String
+===============================
+Use toString() of Wrapper instances or String.valueOf
+
+ e.g  Integer no = 10;
+      String str = no.toString();
+  
+  Or  String str = String.valueOf(no);
+
+
+The java.time API
+==================
+The java.time is new datetime API which provide:
+  1. LocalDate & time (without timezone) and
+  2. ZoneDate & time (with timezone)
+  3. Formatter to format & parse the date or strings
+  4. To define your own "DateTime" system (For instance, Vikram Samvat)
+  5. The LocalDate & time as well as Zoned Date  & time objects are immutable so there is no "set"
+     method however your changes can be returned as new instance when your use "with()" method.
+
+Example: Current local date
+java.time.LocalDate dtLocal = java.time.LocalDate.now(); // returns an instance
+System.out.println(dtLocal);
+java.time.LocalDate fiveDaysBefore = dtLocal.minusDays(5);
+java.time.LocalDate afterFiveDays = dtLocal.plusDays(5);
+
+System.out.println(fiveDaysBefore +  "  " + afterFiveDays);
+
+java.time.LocalDate dt = dtLocal.plusMonths(5).minusDays(4);
+
+Example: Format and Parse the date/string
+
+
+LocalDateTime dt = java.time.LocalDateTime.now();
+DateTimeFormatter formatter 
+  		= DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+		
+System.out.println(dt.format(formatter));
+
+//Parse the DateTIme		
+String str = "31-12-2009 12:20:20 PM";
+formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+LocalDateTime dt1 = LocalDateTime.parse(str, formatter);
+System.out.println(dt1);
+
+
+//Parse the Date
+str = "31-12-2002";
+LocalDate dt2 = LocalDate.parse(str, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+System.out.println(dt2);
+
+Example: ZonedDateTime -- parse & format
+
+ 1. List the time zone id
+
+                for(String id : ZoneId.getAvailableZoneIds()) 
+		    System.out.println(id);
+
+ 2. Current date with current Zone (Asia/Kolkata)
+   ZonedDateTime dt = ZonedDateTime.now();
+   System.out.println(dt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a VV z Z")));
+
+ 3. Create an object "Instant" class - an Instant class returns Date & Time along with Zone
+    of that particualt "instant" of Time.
+
+  java.time.Instant instant = java.time.Instant.now();
+  ZonedDateTime dt1 = instant.atZone(ZoneId.of("Asia/Kolkata"));
+  ZonedDateTime dt2 = instant.atZone(ZoneId.of("America/Toronto"));
+  System.out.println(dt1);
+  System.out.println(dt2);
+
+ 4. Create LocalDate, LocalDateTime or ZonedDateTime or LocalTime object from given time in miilis
+   
+java.time.Instant instant = java.time.Instant.ofEpochMilli(0);
+ZonedDateTime dt1 = instant.atZone(ZoneId.of("Asia/Kolkata"));
+ZonedDateTime dt2 = ZonedDateTime.ofInstant(instant, ZoneId.of("Asia/Karachi"));
+		  
+
+
+    
+
+
+
+  
+      
+      
+    
+
+
+
+         
+   

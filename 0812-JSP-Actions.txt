@@ -1,0 +1,55 @@
+JSP Actions
+===========
+JSP Actions are JSP built-in tags (no need to add taglib directive) which support XML style markup.
+
+1. <useBean> -- To instantiate the class
+
+ <jsp:useBean id="obj-ref-key" class="package.ClassName"></jsp:useBean> will instantiate the "class" and which is referenced via "id" value.
+
+2. <jsp:setProperty> - To set the property of a scope object.
+3. <jsp:getProperty> - To read/get the property value of a scope object
+
+Syntax:  <jsp:setProperty  name="obj-ref-key" property="name" value="value" />
+         <jsp:getProperty name="obj-ref-key" property="name" />
+
+Example:
+
+<jsp:useBean id="now" class="java.util.Date"></jsp:useBean>
+<jsp:useBean id="s1" class="in.amee.model.Student"></jsp:useBean>
+
+<jsp:setProperty name="s1" property="roll" value="10" />
+<jsp:setProperty name="s1" property="name" value="Reena" />
+
+<br/> ${now}
+<br/> ${s1.roll }  ${s1.name } -- ${s1["roll"]}  ${ s1["name"]}
+<br/> <c:out value="${now }" />
+<br/> <c:out value="${s1.roll }" />
+<br/> <c:out value="${s1.name }" />
+<br/> <jsp:getProperty name="s1" property="roll" />
+      <jsp:getProperty name="s1" property="name" />
+<br/> <jsp:getProperty name="now" property="date" /> 
+
+NOTE: setProperty, getProperty, EL, and JSTL automatically read (or update) object data when an object has appropriate "setter-getter" methods. It wont perform any task if getters-setters are not available with the instance.
+
+4. <jsp:forward> and
+5. <jsp:include>  -- To dispatch the request either "to" or "from" another JSPs/servlet.
+
+    <jsp:forward page="sample.jsp" />
+        Will request a new sample.jsp and abandon the current resource. i.e transfer user from one
+        resource to another resource.
+
+Example: Design multi-page layout
+
+index.jsp
+-----------
+<jsp:include page="templates/header.jsp" />
+<h3>Welcome</h3>
+<jsp:include page="templates/footer.jsp" />
+
+     <jsp:include> insert the response content into the currently requested resource.
+
+
+
+
+
+

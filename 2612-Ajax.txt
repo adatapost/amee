@@ -1,0 +1,318 @@
+XMLHttpRequest (XHR) class
+============================
+With the help of XHR component, we can request the "server-resources" and receive the "responses" programatically as well as backgroundly.
+
+This feature is mainly used to minimize the data usage between requests and responses -- We just wish to exchange data (piece of data) between requests/responses instead of passing or returning huge markup/data.
+
+Assume that we've a /test servlet with doGet code:
+   response.getWriter().write("Hello everybody! It's " + new java.util.Date());
+   response.getWriter().flush();
+
+Here, a servlet returns plain-text data instead of "a view".
+
+Now, we can request this resource by following client code: (code in any jsp/html)
+
+<button onclick="doRequest()">Request the /test resource</button>
+
+<script>
+  function doRequest() {
+
+     //1. Instantiate the XHR
+     let xhr = new XMLHttpRequest();
+
+     //2. set url, method and data
+     xhr.open("get", "test");
+ 
+     //3. set event handler which represent the response of requested resource.
+     xhr.onreadystatechange = function() {
+         //receive the response   
+         if(xhr.DONE == xhr.readyState) {
+             console.log( xhr.responseText );
+         }
+      };
+
+      //4. Make or start the request
+      xhr.send();
+   }
+</script>
+
+Make POST request
+=================
+Edit the previous code :
+
+ 1. code in doPost of /test
+    //receive the data
+    String no = request.getParameter("no");
+    String name = request.getParameter("name");
+    //Write back data to the client
+    response.getWriter().write("Success :" + no + " " + name);
+    response.getWriter().flush();
+
+ 2. client code.
+
+   ...
+   xhr.open("post","test");
+   ....
+   ...
+   //4. make or start request
+   //prepare the FormData
+   let data = new FormData();
+   data.set("no", "10");  // or data.set("no", varName );
+   data.set("name","Reena");
+   xhr.send(data);
+   ....
+      
+The servlet configuration to receive the AJAX POST data
+--------------------------------------------------------
+In order to read the POST data, the servlet "must" be annotated using @MultipartConfig.
+
+The XHR object is used to request the "resources" -- especially a method or a piece of code at server environment and receive the data in the form of "plain text" or "XML" or "JSON" or "Binary".
+
+You may denote or specify the "content-type" of response in your servlet's doGet or doPost method using following instruction:
+   		response.setContentType("plain/text");
+            Or
+		response.addHeader("content-type", "plain/text");
+
+ There may be different content-type for different output.
+		For example:  HTML -- text/html
+			      XML  -- text/xml  or application/xml
+			      JSON -- text/json or application/json or application/jsonp
+		for binary data    -- application/octate-stream
+			       video - video/mp4 or video/*
+	     	
+Example: Design your own "js" library which contains basic/essential wrapper methods.
+
+/js/my.js
+-----------
+function ajax(method,url,data,func) {
+   let xhr = new XMLHttpRequest();
+   xhr.open(method,url);
+   xhr.onreadystatechange = function() {
+   if(xhr.DONE == xhr.readyState) {
+       func( xhr.responseText );
+    }
+   };
+   xhr.send(data);
+}
+function post(url,data,func) {
+  ajax("post",url,data,func);
+}
+function get(url,data,func) {
+  ajax("get",url,data,func);
+}
+function value(id) {
+  return document.querySelector(id).value;
+}
+function html(id, text) {
+  document.querySelector(id).innerHTML = text;
+}
+
+Client code in .jsp or .html file:
+
+<fieldset>
+<legend>Test-1</legend>
+<div>
+ <input type="number" id="no" placeholder="No" />
+ <input type="text" id="name" placeholder="Name" />
+ <a href="#" onclick="doAdd()">Add</a>
+ <div id="output"></div>
+</div>
+</fieldset>
+<script>
+  function doAdd() {
+     let d = new FormData();
+     d.set("no", value("#no"));
+     d.set("name", value("#name"));
+     post("test",d,function(result){
+         html("#output",result);
+     })
+   }
+</script>
+<script src="js/my.js"></script>
+
+Edit the "value" "html" methods in my.js
+-------------------------------
+
+function value(id,mValue) {
+ if(mValue) {
+    document.querySelector(id).value = mValue;
+    return;
+  }
+ return document.querySelector(id).value;
+}
+function html(id, text) {
+ if(text) {
+   document.querySelector(id).innerHTML = text;
+   return;
+ }
+ return document.querySelector(id).innerHTML;
+}
+
+Example: Return JSON string and parse the string using JSON.parse() JavaScript method.
+
+code in servlet: Assume that we've "Country(countryId, countryName)" POJO
+
+response.setContentType("application/json");
+CountryModel model = new CountryModel(10,"India");
+JSONObject jsonObject = new JSONObject(model);
+response.getWriter().write(jsonObject.toString());
+response.getWriter().flush();
+
+OR
+
+response.getWriter().write( new JSONObject(model).toString() );
+
+[Note: Add source code of JSON API to "org.json" package]
+
+
+The client code would be:
+
+<script src="js/my.js"></script>
+<input type="number" id="countryId" />
+<input type="text" id="countryName" />
+
+<script>
+  post("test",null,function(result){ 
+       //convert to JSON object
+       let obj = JSON.parse( result );
+       console.log( obj );
+       value("#countryId",obj.countryId);
+       value("#countryName", obj.countryName);
+   });
+</script>
+
+Design the API or WebAPI which returns JSON result on various (add, delete, get, list etc) actions.
+
+That means your servlet returns a JSON string comprises some sort of message & data.
+
+So, first of create a "ResponseData" or use your sense to name that component because this component returns three "data" -- a message (Text), a status (boolean) and an object of Object (Any type of data).
+
+public class ResponseData {
+  private String message;
+  private boolean status;
+  private Object data;
+  //TODO
+}
+
+Now, the code in doPost of your servlet -- say /country -- CountryServlet:
+
+ String countryId = request.getParameter("countryId");
+ String countryName = request.getParameter("countryName");
+ String action = request.getParameter("action");
+
+ ResponseData rd = new ResponseData();
+
+ if("Add".equals(action)) {
+    //Set data to ResponseObject based upon the Database actions & the result
+    rd.setStatus(false);
+    rd.setMessage("Failed");
+ } else if("Delete".equals(action)) {
+        	rd.setStatus(true);
+        	rd.setMessage("Deleted");
+        }else if("Update".equals(action)) {
+        	rd.setStatus(true);
+        	rd.setMessage("Updated");
+        } else if("Get".equals(action)) {
+        	rd.setStatus(true);
+        	rd.setMessage("");
+        	rd.setData( new CountryModel(10,"India") );
+        } else if("All".equals(action)) {
+        	rd.setStatus(true);
+        	rd.setMessage("");
+        	List<CountryModel> list  = new ArrayList<>();
+        	list.add( new CountryModel(1,"Nepal"));
+        	list.add( new CountryModel(2,"PK"));
+        	list.add( new CountryModel(10,"India"));
+        	rd.setData( list );
+        }
+        
+		response.setContentType("application/json");
+		response.getWriter().write( new JSONObject(rd).toString() );
+		response.getWriter().flush();
+
+
+ test-ajax.jsp
+=================
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Test the AJAX Routines</title>
+</head>
+<body>
+
+<script src="js/my.js"></script>
+
+
+<fieldset>
+<legend>Test-1</legend>
+<div>
+ <input type="number" id="no" placeholder="No" />
+ <input type="text" id="name" placeholder="Name" />
+ <a href="#" onclick="doAdd()">Add</a>
+ <div id="output"></div>
+</div>
+</fieldset>
+<script>
+  function doAdd() {
+     let d = new FormData();
+     d.set("no", value("#no"));
+     d.set("name", value("#name"));
+     post("test",d,function(result){
+         html("#output",result);
+     })
+   }
+</script>
+
+<fieldset>
+  <legend>Test-2</legend>
+  <div>
+    <input type="number" id="countryId" />
+    <input type="text" id="countryName" />
+  </div>
+  
+  <script>
+    post("test",null,function(result){ 
+        //convert to JSON object
+        let obj = JSON.parse( result );
+        console.log( obj );
+        value("#countryId",obj.countryId);
+        value("#countryName", obj.countryName);
+     });
+  </script>
+</fieldset>
+
+<fieldset>
+  <legend>Test3</legend>
+  
+  <button onclick="doAction('Add')">Add</button>
+  <button onclick="doAction('Delete')">Delete</button>
+  <button onclick="doAction('Update')">Update</button>
+  <button onclick="doAction('Get')">Get Country</button>
+  <button onclick="doAction('All')">All Country</button>
+  <script>
+   function doAction(action) {
+	   let data = new FormData();
+	   data.set("action",action);
+     post("test",data, function(r) {
+        let obj = JSON.parse(r);
+        console.log( obj );
+        if(obj.status) {
+             alert("Done!!");
+            }
+     });
+   }
+  </script>
+</fieldset>
+
+
+</body>
+</html>
+
+
+
+			
+
+
